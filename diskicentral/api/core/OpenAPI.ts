@@ -20,7 +20,7 @@ export type OpenAPIConfig = {
 };
 
 export const OpenAPI: OpenAPIConfig = {
-    BASE: 'https://diskicentraldevapi-cuata7bvf7e4bsgk.southafricanorth-01.azurewebsites.net',
+    BASE: process.env.NEXT_PUBLIC_API_URL || '',
     VERSION: '1.0.0',
     WITH_CREDENTIALS: false,
     CREDENTIALS: 'include',

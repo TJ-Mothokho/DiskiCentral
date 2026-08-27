@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "generate-sdk": "openapi-typescript-codegen --input https://diskicentraldevapi-cuata7bvf7e4bsgk.southafricanorth-01.azurewebsites.net/openapi/v1.json --output ./api"
+    "lint": "eslint"  
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
