@@ -206,4 +206,132 @@ export class ArticlesService {
       throw "Failed to fetch articles. Please try again.";
     }
   }
+
+  public async getArticlesByAuthorId(
+    authorId: string,
+  ): Promise<GetAllArticlesResponse> {
+    const options = {
+      method: "GET",
+      url: `${BASE_URL}/api/Articles/author/${encodeURIComponent(authorId)}`,
+    };
+
+    try {
+      const response = await axios.request<GetAllArticlesResponse>(options);
+
+      if (!response.data.success) {
+        throw response.data.errors
+          ? response.data.errors
+          : "Unexpected error occurred. Please refresh the page!";
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch articles by author:", error);
+
+      throw "Failed to fetch articles by author. Please try again.";
+    }
+  }
+
+  public async getArticlesByCategoryId(
+    categoryId: string,
+  ): Promise<GetAllArticlesResponse> {
+    const options = {
+      method: "GET",
+      url: `${BASE_URL}/api/Articles/category/${encodeURIComponent(categoryId)}`,
+    };
+
+    try {
+      const response = await axios.request<GetAllArticlesResponse>(options);
+
+      if (!response.data.success) {
+        throw response.data.errors
+          ? response.data.errors
+          : "Unexpected error occurred. Please refresh the page!";
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch articles by category:", error);
+
+      throw "Failed to fetch articles by category. Please try again.";
+    }
+  }
+
+  public async searchArticles(query?: string): Promise<GetAllArticlesResponse> {
+    const params = query ? { q: query } : undefined;
+
+    const options = {
+      method: "GET",
+      url: `${BASE_URL}/api/Articles/search`,
+      params,
+    };
+
+    try {
+      const response = await axios.request<GetAllArticlesResponse>(options);
+
+      if (!response.data.success) {
+        throw response.data.errors
+          ? response.data.errors
+          : "Unexpected error occurred. Please refresh the page!";
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to search articles:", error);
+
+      throw "Failed to search articles. Please try again.";
+    }
+  }
+
+  public async addRelatedArticle(
+    articleId: string,
+    relatedArticleId: string,
+  ): Promise<BooleanResponse> {
+    const options = {
+      method: "POST",
+      url: `${BASE_URL}/api/Articles/${encodeURIComponent(articleId)}/related/${encodeURIComponent(relatedArticleId)}`,
+    };
+
+    try {
+      const response = await axios.request<BooleanResponse>(options);
+
+      if (!response.data.success) {
+        throw response.data.errors
+          ? response.data.errors
+          : "Unexpected error occurred. Please refresh the page!";
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to add related article:", error);
+
+      throw "Failed to add related article. Please try again.";
+    }
+  }
+
+  public async removeRelatedArticle(
+    articleId: string,
+    relatedArticleId: string,
+  ): Promise<BooleanResponse> {
+    const options = {
+      method: "DELETE",
+      url: `${BASE_URL}/api/Articles/${encodeURIComponent(articleId)}/related/${encodeURIComponent(relatedArticleId)}`,
+    };
+
+    try {
+      const response = await axios.request<BooleanResponse>(options);
+
+      if (!response.data.success) {
+        throw response.data.errors
+          ? response.data.errors
+          : "Unexpected error occurred. Please refresh the page!";
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to remove related article:", error);
+
+      throw "Failed to remove related article. Please try again.";
+    }
+  }
 }
