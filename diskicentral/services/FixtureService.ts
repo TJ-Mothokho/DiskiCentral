@@ -4,211 +4,101 @@ import {
   GetFixtureResponse,
   UpdateFixture,
 } from "@/types/fixture";
-import axios from "axios";
 import { BooleanResponse } from "@/types/common";
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL
-  ? process.env.NEXT_PUBLIC_API_URL
-  : "";
+import { apiRequest, BASE_URL } from "@/services/ApiRequest";
 
 export class FixturesService {
   public static async getApiFixtures(): Promise<GetAllFixturesResponse> {
-    try {
-      const response = await axios.request<GetAllFixturesResponse>({
-        method: "GET",
-        url: `${BASE_URL}/api/Fixtures`,
-      });
-
-      if (!response.data.success) {
-        throw (
-          response.data.errors ??
-          "Unexpected error occurred. Please refresh the page!"
-        );
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch fixtures:", error);
-      throw "Failed to fetch fixtures. Please try again.";
-    }
+    return apiRequest(
+      { method: "GET", url: `${BASE_URL}/api/Fixtures` },
+      "Failed to fetch fixtures.",
+    );
   }
 
-  public static async addFixture(fixture: AddFixture): Promise<GetFixtureResponse> {
-    try {
-      const response = await axios.request<GetFixtureResponse>({
+  public static async addFixture(
+    fixture: AddFixture,
+  ): Promise<GetFixtureResponse> {
+    return apiRequest(
+      {
         method: "POST",
         url: `${BASE_URL}/api/Fixtures`,
         headers: { "Content-Type": "application/json" },
         data: fixture,
-      });
-
-      if (!response.data.success) {
-        throw (
-          response.data.errors ??
-          "Unexpected error occurred. Please refresh the page!"
-        );
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to add fixture:", error);
-      throw "Failed to add fixture. Please try again.";
-    }
+      },
+      "Failed to add fixture.",
+    );
   }
 
   public static async getFixtureById(id: string): Promise<GetFixtureResponse> {
-    try {
-      const response = await axios.request<GetFixtureResponse>({
+    return apiRequest(
+      {
         method: "GET",
         url: `${BASE_URL}/api/Fixtures/${encodeURIComponent(id)}`,
-      });
-
-      if (!response.data.success) {
-        throw (
-          response.data.errors ??
-          "Unexpected error occurred. Please refresh the page!"
-        );
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch fixture:", error);
-      throw "Failed to fetch fixture. Please try again.";
-    }
+      },
+      "Failed to fetch fixture.",
+    );
   }
 
   public static async updateFixture(
     id: string,
     fixture: UpdateFixture,
   ): Promise<GetFixtureResponse> {
-    try {
-      const response = await axios.request<GetFixtureResponse>({
+    return apiRequest(
+      {
         method: "PUT",
         url: `${BASE_URL}/api/Fixtures/${encodeURIComponent(id)}`,
         headers: { "Content-Type": "application/json" },
         data: fixture,
-      });
-
-      if (!response.data.success) {
-        throw (
-          response.data.errors ??
-          "Unexpected error occurred. Please refresh the page!"
-        );
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to update fixture:", error);
-      throw "Failed to update fixture. Please try again.";
-    }
+      },
+      "Failed to update fixture.",
+    );
   }
 
   public static async deleteFixture(id: string): Promise<BooleanResponse> {
-    try {
-      const response = await axios.request<BooleanResponse>({
+    return apiRequest(
+      {
         method: "DELETE",
         url: `${BASE_URL}/api/Fixtures/${encodeURIComponent(id)}`,
-      });
-
-      if (!response.data.success) {
-        throw (
-          response.data.errors ??
-          "Unexpected error occurred. Please refresh the page!"
-        );
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to delete fixture:", error);
-      throw "Failed to delete fixture. Please try again.";
-    }
+      },
+      "Failed to delete fixture.",
+    );
   }
 
   public static async getFixturesByCompetitionId(
     competitionId: string,
   ): Promise<GetAllFixturesResponse> {
-    try {
-      const response = await axios.request<GetAllFixturesResponse>({
+    return apiRequest(
+      {
         method: "GET",
         url: `${BASE_URL}/api/Fixtures/competition/${encodeURIComponent(competitionId)}`,
-      });
-
-      if (!response.data.success) {
-        throw (
-          response.data.errors ??
-          "Unexpected error occurred. Please refresh the page!"
-        );
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch fixtures by competition:", error);
-      throw "Failed to fetch fixtures by competition. Please try again.";
-    }
+      },
+      "Failed to fetch fixtures by competition.",
+    );
   }
 
   public static async getFinishedFixtures(): Promise<GetAllFixturesResponse> {
-    try {
-      const response = await axios.request<GetAllFixturesResponse>({
-        method: "GET",
-        url: `${BASE_URL}/api/Fixtures/finished`,
-      });
-
-      if (!response.data.success) {
-        throw (
-          response.data.errors ??
-          "Unexpected error occurred. Please refresh the page!"
-        );
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch finished fixtures:", error);
-      throw "Failed to fetch finished fixtures. Please try again.";
-    }
+    return apiRequest(
+      { method: "GET", url: `${BASE_URL}/api/Fixtures/finished` },
+      "Failed to fetch finished fixtures.",
+    );
   }
 
   public static async getFixturesByTeamId(
     teamId: string,
   ): Promise<GetAllFixturesResponse> {
-    try {
-      const response = await axios.request<GetAllFixturesResponse>({
+    return apiRequest(
+      {
         method: "GET",
         url: `${BASE_URL}/api/Fixtures/team/${encodeURIComponent(teamId)}`,
-      });
-
-      if (!response.data.success) {
-        throw (
-          response.data.errors ??
-          "Unexpected error occurred. Please refresh the page!"
-        );
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch fixtures by team:", error);
-      throw "Failed to fetch fixtures by team. Please try again.";
-    }
+      },
+      "Failed to fetch fixtures by team.",
+    );
   }
 
   public static async getUpcomingFixtures(): Promise<GetAllFixturesResponse> {
-    try {
-      const response = await axios.request<GetAllFixturesResponse>({
-        method: "GET",
-        url: `${BASE_URL}/api/Fixtures/upcoming`,
-      });
-
-      if (!response.data.success) {
-        throw (
-          response.data.errors ??
-          "Unexpected error occurred. Please refresh the page!"
-        );
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch upcoming fixtures:", error);
-      throw "Failed to fetch upcoming fixtures. Please try again.";
-    }
+    return apiRequest(
+      { method: "GET", url: `${BASE_URL}/api/Fixtures/upcoming` },
+      "Failed to fetch upcoming fixtures.",
+    );
   }
 }

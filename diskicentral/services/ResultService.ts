@@ -4,150 +4,73 @@ import {
   GetResultResponse,
   UpdateResult,
 } from "@/types/result";
-import axios from "axios";
 import { BooleanResponse } from "@/types/common";
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL
-  ? process.env.NEXT_PUBLIC_API_URL
-  : "";
+import { apiRequest, BASE_URL } from "@/services/ApiRequest";
 
 export class ResultsService {
   public static async getApiResults(): Promise<GetAllResultsResponse> {
-    try {
-      const response = await axios.request<GetAllResultsResponse>({
-        method: "GET",
-        url: `${BASE_URL}/api/Results`,
-      });
-
-      if (!response.data.success) {
-        throw response.data.errors
-          ? response.data.errors
-          : "Unexpected error occurred. Please refresh the page!";
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch results:", error);
-
-      throw "Failed to fetch results. Please try again.";
-    }
+    return apiRequest(
+      { method: "GET", url: `${BASE_URL}/api/Results` },
+      "Failed to fetch results.",
+    );
   }
 
   public static async addResult(result: AddResult): Promise<GetResultResponse> {
-    try {
-      const response = await axios.request<GetResultResponse>({
+    return apiRequest(
+      {
         method: "POST",
         url: `${BASE_URL}/api/Results`,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         data: result,
-      });
-
-      if (!response.data.success) {
-        throw response.data.errors
-          ? response.data.errors
-          : "Unexpected error occurred. Please refresh the page!";
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to add result:", error);
-
-      throw "Failed to add result. Please try again.";
-    }
+      },
+      "Failed to add result.",
+    );
   }
 
   public static async getResultById(id: string): Promise<GetResultResponse> {
-    try {
-      const response = await axios.request<GetResultResponse>({
+    return apiRequest(
+      {
         method: "GET",
         url: `${BASE_URL}/api/Results/${encodeURIComponent(id)}`,
-      });
-
-      if (!response.data.success) {
-        throw response.data.errors
-          ? response.data.errors
-          : "Unexpected error occurred. Please refresh the page!";
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch result:", error);
-
-      throw "Failed to fetch result. Please try again.";
-    }
+      },
+      "Failed to fetch result.",
+    );
   }
 
   public static async updateResult(
     id: string,
     result: UpdateResult,
   ): Promise<GetResultResponse> {
-    try {
-      const response = await axios.request<GetResultResponse>({
+    return apiRequest(
+      {
         method: "PUT",
         url: `${BASE_URL}/api/Results/${encodeURIComponent(id)}`,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         data: result,
-      });
-
-      if (!response.data.success) {
-        throw response.data.errors
-          ? response.data.errors
-          : "Unexpected error occurred. Please refresh the page!";
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to update result:", error);
-
-      throw "Failed to update result. Please try again.";
-    }
+      },
+      "Failed to update result.",
+    );
   }
 
   public static async deleteResult(id: string): Promise<BooleanResponse> {
-    try {
-      const response = await axios.request<BooleanResponse>({
+    return apiRequest(
+      {
         method: "DELETE",
         url: `${BASE_URL}/api/Results/${encodeURIComponent(id)}`,
-      });
-
-      if (!response.data.success) {
-        throw response.data.errors
-          ? response.data.errors
-          : "Unexpected error occurred. Please refresh the page!";
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to delete result:", error);
-
-      throw "Failed to delete result. Please try again.";
-    }
+      },
+      "Failed to delete result.",
+    );
   }
 
   public static async getResultByFixtureId(
     fixtureId: string,
   ): Promise<GetResultResponse> {
-    try {
-      const response = await axios.request<GetResultResponse>({
+    return apiRequest(
+      {
         method: "GET",
         url: `${BASE_URL}/api/Results/fixture/${encodeURIComponent(fixtureId)}`,
-      });
-
-      if (!response.data.success) {
-        throw response.data.errors
-          ? response.data.errors
-          : "Unexpected error occurred. Please refresh the page!";
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch result by fixture:", error);
-
-      throw "Failed to fetch result by fixture. Please try again.";
-    }
+      },
+      "Failed to fetch result by fixture.",
+    );
   }
 }
