@@ -12,7 +12,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL
   : "";
 
 export class TransfersService {
-  public async getApiTransfers(): Promise<GetAllTransfersResponse> {
+  public static async getApiTransfers(): Promise<GetAllTransfersResponse> {
     const options = {
       method: "GET",
       url: `${BASE_URL}/api/Transfers`,
@@ -35,7 +35,7 @@ export class TransfersService {
     }
   }
 
-  public async addTransfer(
+  public static async addTransfer(
     transfer: AddTransfer,
   ): Promise<GetTransferResponse> {
     const options = {
@@ -64,7 +64,7 @@ export class TransfersService {
     }
   }
 
-  public async getTransferById(id: string): Promise<GetTransferResponse> {
+  public static async getTransferById(id: string): Promise<GetTransferResponse> {
     const options = {
       method: "GET",
       url: `${BASE_URL}/api/Transfers/${encodeURIComponent(id)}`,
@@ -87,7 +87,7 @@ export class TransfersService {
     }
   }
 
-  public async updateTransfer(
+  public static async updateTransfer(
     id: string,
     transfer: UpdateTransfer,
   ): Promise<GetTransferResponse> {
@@ -117,7 +117,7 @@ export class TransfersService {
     }
   }
 
-  public async deleteTransfer(id: string): Promise<BooleanResponse> {
+  public static async deleteTransfer(id: string): Promise<BooleanResponse> {
     const options = {
       method: "DELETE",
       url: `${BASE_URL}/api/Transfers/${encodeURIComponent(id)}`,
@@ -140,7 +140,7 @@ export class TransfersService {
     }
   }
 
-  public async getTransfersByPlayerId(
+  public static async getTransfersByPlayerId(
     playerId: string,
   ): Promise<GetAllTransfersResponse> {
     const options = {
@@ -165,7 +165,7 @@ export class TransfersService {
     }
   }
 
-  public async getTransfersByTeamId(
+  public static async getTransfersByTeamId(
     teamId: string,
   ): Promise<GetAllTransfersResponse> {
     const options = {

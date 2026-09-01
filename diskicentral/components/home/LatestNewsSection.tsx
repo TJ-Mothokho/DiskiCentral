@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 import { Article } from "@/types/article";
-import ArticleCard from "@/components/ArticleCard";
+import ArticleCard from "@/components/article/ArticleCard";
 
 interface LatestNewsSectionProps {
   articles: Article[];

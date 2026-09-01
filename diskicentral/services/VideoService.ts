@@ -11,8 +11,8 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL
   ? process.env.NEXT_PUBLIC_API_URL
   : "";
 
-export class VideosService {
-  public async getApiVideos(): Promise<GetAllVideosResponse> {
+export class VideoService {
+  public static async getApiVideos(): Promise<GetAllVideosResponse> {
     try {
       const response = await axios.request<GetAllVideosResponse>({
         method: "GET",
@@ -33,7 +33,7 @@ export class VideosService {
     }
   }
 
-  public async addVideo(video: AddVideo): Promise<GetVideoResponse> {
+  public static async addVideo(video: AddVideo): Promise<GetVideoResponse> {
     try {
       const response = await axios.request<GetVideoResponse>({
         method: "POST",
@@ -56,7 +56,7 @@ export class VideosService {
     }
   }
 
-  public async getVideoById(id: string): Promise<GetVideoResponse> {
+  public static async getVideoById(id: string): Promise<GetVideoResponse> {
     try {
       const response = await axios.request<GetVideoResponse>({
         method: "GET",
@@ -77,7 +77,7 @@ export class VideosService {
     }
   }
 
-  public async updateVideo(
+  public static async updateVideo(
     id: string,
     video: UpdateVideo,
   ): Promise<GetVideoResponse> {
@@ -103,7 +103,7 @@ export class VideosService {
     }
   }
 
-  public async deleteVideo(id: string): Promise<BooleanResponse> {
+  public static async deleteVideo(id: string): Promise<BooleanResponse> {
     try {
       const response = await axios.request<BooleanResponse>({
         method: "DELETE",
@@ -124,7 +124,7 @@ export class VideosService {
     }
   }
 
-  public async getVideosByAuthorId(
+  public static async getVideosByAuthorId(
     authorId: string,
   ): Promise<GetAllVideosResponse> {
     try {
@@ -147,7 +147,7 @@ export class VideosService {
     }
   }
 
-  public async getVideosByCategoryId(
+  public static async getVideosByCategoryId(
     categoryId: string,
   ): Promise<GetAllVideosResponse> {
     try {
@@ -170,7 +170,7 @@ export class VideosService {
     }
   }
 
-  public async getFeaturedApiVideos(): Promise<GetAllVideosResponse> {
+  public static async getFeaturedApiVideos(): Promise<GetAllVideosResponse> {
     try {
       const response = await axios.request<GetAllVideosResponse>({
         method: "GET",
@@ -191,7 +191,7 @@ export class VideosService {
     }
   }
 
-  public async getVideoBySlug(slug: string): Promise<GetVideoResponse> {
+  public static async getVideoBySlug(slug: string): Promise<GetVideoResponse> {
     try {
       const response = await axios.request<GetVideoResponse>({
         method: "GET",

@@ -12,7 +12,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL
   : "";
 
 export class ArticlesService {
-  public async getApiArticles(): Promise<GetAllArticlesResponse> {
+  public static async getApiArticles(): Promise<GetAllArticlesResponse> {
     const options = {
       method: "GET",
       url: `${BASE_URL}/api/Articles`,
@@ -35,7 +35,7 @@ export class ArticlesService {
     }
   }
 
-  public async getArticleById(id: string): Promise<GetArticleResponse> {
+  public static async getArticleById(id: string): Promise<GetArticleResponse> {
     const options = {
       method: "GET",
       url: `${BASE_URL}/api/Articles/${id}`,
@@ -58,7 +58,7 @@ export class ArticlesService {
     }
   }
 
-  public async addArticle(article: AddArticle): Promise<GetArticleResponse> {
+  public static async addArticle(article: AddArticle): Promise<GetArticleResponse> {
     const options = {
       method: "POST",
       url: `${BASE_URL}/api/Articles`,
@@ -85,7 +85,7 @@ export class ArticlesService {
     }
   }
 
-  public async updateArticle(
+  public static async updateArticle(
     id: string,
     article: UpdateArticle,
   ): Promise<GetArticleResponse> {
@@ -115,7 +115,7 @@ export class ArticlesService {
     }
   }
 
-  public async deleteArticle(id: string): Promise<BooleanResponse> {
+  public static async deleteArticle(id: string): Promise<BooleanResponse> {
     const options = {
       method: "DELETE",
       url: `${BASE_URL}/api/Articles/${id}`,
@@ -138,7 +138,7 @@ export class ArticlesService {
     }
   }
 
-  public async getArticleBySlug(slug: string): Promise<GetArticleResponse> {
+  public static async getArticleBySlug(slug: string): Promise<GetArticleResponse> {
     const options = {
       method: "GET",
       url: `${BASE_URL}/api/Articles/slug/${slug}`,
@@ -161,7 +161,7 @@ export class ArticlesService {
     }
   }
 
-  public async getFeaturedApiArticles(): Promise<GetAllArticlesResponse> {
+  public static async getFeaturedApiArticles(): Promise<GetAllArticlesResponse> {
     const options = {
       method: "GET",
       url: `${BASE_URL}/api/Articles/featured`,
@@ -184,7 +184,7 @@ export class ArticlesService {
     }
   }
 
-  public async getTrendingApiArticles(): Promise<GetAllArticlesResponse> {
+  public static async getTrendingApiArticles(): Promise<GetAllArticlesResponse> {
     const options = {
       method: "GET",
       url: `${BASE_URL}/api/Articles/trending`,
@@ -207,7 +207,7 @@ export class ArticlesService {
     }
   }
 
-  public async getArticlesByAuthorId(
+  public static async getArticlesByAuthorId(
     authorId: string,
   ): Promise<GetAllArticlesResponse> {
     const options = {
@@ -232,7 +232,7 @@ export class ArticlesService {
     }
   }
 
-  public async getArticlesByCategoryId(
+  public static async getArticlesByCategoryId(
     categoryId: string,
   ): Promise<GetAllArticlesResponse> {
     const options = {
@@ -257,7 +257,7 @@ export class ArticlesService {
     }
   }
 
-  public async searchArticles(query?: string): Promise<GetAllArticlesResponse> {
+  public static async searchArticles(query?: string): Promise<GetAllArticlesResponse> {
     const params = query ? { q: query } : undefined;
 
     const options = {
@@ -283,7 +283,7 @@ export class ArticlesService {
     }
   }
 
-  public async addRelatedArticle(
+  public static async addRelatedArticle(
     articleId: string,
     relatedArticleId: string,
   ): Promise<BooleanResponse> {
@@ -309,7 +309,7 @@ export class ArticlesService {
     }
   }
 
-  public async removeRelatedArticle(
+  public static async removeRelatedArticle(
     articleId: string,
     relatedArticleId: string,
   ): Promise<BooleanResponse> {

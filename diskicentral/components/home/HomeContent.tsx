@@ -1,9 +1,9 @@
-"use client";
-
-import { useState } from "react";
-import { useTheme } from "@/themes/ThemeContext";
-
 import { Article } from "@/types/article";
+import { Fixture } from "@/types/fixture";
+import { Player } from "@/types/player";
+import { Result } from "@/types/result";
+import { Transfer } from "@/types/transfer";
+import { Video } from "@/types/video";
 
 import HeroSection from "./HeroSection";
 import LatestNewsSection from "./LatestNewsSection";
@@ -17,22 +17,22 @@ import NewsletterSection from "./NewsletterSection";
 
 interface HomeContentProps {
   articles: Article[];
+  fixtures: Fixture[];
+  players: Player[];
+  results: Result[];
+  transfers: Transfer[];
+  videos: Video[];
 }
 
-export default function HomeContent({ articles }: HomeContentProps) {
-  const { darkMode } = useTheme();
-
-  /*
-   * Home page data
-   *
-   * These are currently placeholders for the other
-   * API services/types we'll migrate next.
-   */
-  const videos = [];
-  const fixtures = [];
-  const results = [];
-  const players = [];
-  const transfers = [];
+export default function HomeContent({
+  articles,
+  fixtures,
+  players,
+  results,
+  transfers,
+  videos,
+}: HomeContentProps) {
+  const darkMode = false;
 
   const featured = articles[0];
   const latest = articles.slice(1, 7);
@@ -51,9 +51,6 @@ export default function HomeContent({ articles }: HomeContentProps) {
     .filter((article) => article.categoryName === "Opinion")
     .slice(0, 2);
 
-  const abroadPlayers = players.filter((player) => player.abroad).slice(0, 4);
-
-  const recentTransfers = transfers.slice(0, 4);
   const upcomingFixtures = fixtures.slice(0, 3);
   const recentResults = results.slice(0, 3);
 
@@ -96,9 +93,9 @@ export default function HomeContent({ articles }: HomeContentProps) {
         darkMode={darkMode}
       />
 
-      <PlayersAbroadSection players={abroadPlayers} darkMode={darkMode} />
+      <PlayersAbroadSection players={players} darkMode={darkMode} />
 
-      <TransferCentreSection transfers={recentTransfers} darkMode={darkMode} />
+      <TransferCentreSection transfers={transfers} darkMode={darkMode} />
 
       <OpinionSection articles={opinionArticles} darkMode={darkMode} />
 

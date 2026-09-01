@@ -12,7 +12,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL
   : "";
 
 export class PlayersService {
-  public async getApiPlayers(): Promise<GetAllPlayersResponse> {
+  public static async getApiPlayers(): Promise<GetAllPlayersResponse> {
     try {
       const response = await axios.request<GetAllPlayersResponse>({
         method: "GET",
@@ -33,7 +33,7 @@ export class PlayersService {
     }
   }
 
-  public async addPlayer(player: AddPlayer): Promise<GetPlayerResponse> {
+  public static async addPlayer(player: AddPlayer): Promise<GetPlayerResponse> {
     try {
       const response = await axios.request<GetPlayerResponse>({
         method: "POST",
@@ -56,7 +56,7 @@ export class PlayersService {
     }
   }
 
-  public async getPlayerById(id: string): Promise<GetPlayerResponse> {
+  public static async getPlayerById(id: string): Promise<GetPlayerResponse> {
     try {
       const response = await axios.request<GetPlayerResponse>({
         method: "GET",
@@ -77,7 +77,7 @@ export class PlayersService {
     }
   }
 
-  public async updatePlayer(
+  public static async updatePlayer(
     id: string,
     player: UpdatePlayer,
   ): Promise<GetPlayerResponse> {
@@ -103,7 +103,7 @@ export class PlayersService {
     }
   }
 
-  public async deletePlayer(id: string): Promise<BooleanResponse> {
+  public static async deletePlayer(id: string): Promise<BooleanResponse> {
     try {
       const response = await axios.request<BooleanResponse>({
         method: "DELETE",
@@ -124,7 +124,7 @@ export class PlayersService {
     }
   }
 
-  public async searchPlayers(query?: string): Promise<GetAllPlayersResponse> {
+  public static async searchPlayers(query?: string): Promise<GetAllPlayersResponse> {
     try {
       const response = await axios.request<GetAllPlayersResponse>({
         method: "GET",
@@ -146,7 +146,7 @@ export class PlayersService {
     }
   }
 
-  public async getPlayerBySlug(slug: string): Promise<GetPlayerResponse> {
+  public static async getPlayerBySlug(slug: string): Promise<GetPlayerResponse> {
     try {
       const response = await axios.request<GetPlayerResponse>({
         method: "GET",
@@ -167,7 +167,7 @@ export class PlayersService {
     }
   }
 
-  public async getPlayersByTeamId(
+  public static async getPlayersByTeamId(
     teamId: string,
   ): Promise<GetAllPlayersResponse> {
     try {

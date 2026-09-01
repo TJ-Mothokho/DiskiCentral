@@ -12,7 +12,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL
   : "";
 
 export class FixturesService {
-  public async getApiFixtures(): Promise<GetAllFixturesResponse> {
+  public static async getApiFixtures(): Promise<GetAllFixturesResponse> {
     try {
       const response = await axios.request<GetAllFixturesResponse>({
         method: "GET",
@@ -33,7 +33,7 @@ export class FixturesService {
     }
   }
 
-  public async addFixture(fixture: AddFixture): Promise<GetFixtureResponse> {
+  public static async addFixture(fixture: AddFixture): Promise<GetFixtureResponse> {
     try {
       const response = await axios.request<GetFixtureResponse>({
         method: "POST",
@@ -56,7 +56,7 @@ export class FixturesService {
     }
   }
 
-  public async getFixtureById(id: string): Promise<GetFixtureResponse> {
+  public static async getFixtureById(id: string): Promise<GetFixtureResponse> {
     try {
       const response = await axios.request<GetFixtureResponse>({
         method: "GET",
@@ -77,7 +77,7 @@ export class FixturesService {
     }
   }
 
-  public async updateFixture(
+  public static async updateFixture(
     id: string,
     fixture: UpdateFixture,
   ): Promise<GetFixtureResponse> {
@@ -103,7 +103,7 @@ export class FixturesService {
     }
   }
 
-  public async deleteFixture(id: string): Promise<BooleanResponse> {
+  public static async deleteFixture(id: string): Promise<BooleanResponse> {
     try {
       const response = await axios.request<BooleanResponse>({
         method: "DELETE",
@@ -124,7 +124,7 @@ export class FixturesService {
     }
   }
 
-  public async getFixturesByCompetitionId(
+  public static async getFixturesByCompetitionId(
     competitionId: string,
   ): Promise<GetAllFixturesResponse> {
     try {
@@ -147,7 +147,7 @@ export class FixturesService {
     }
   }
 
-  public async getFinishedFixtures(): Promise<GetAllFixturesResponse> {
+  public static async getFinishedFixtures(): Promise<GetAllFixturesResponse> {
     try {
       const response = await axios.request<GetAllFixturesResponse>({
         method: "GET",
@@ -168,7 +168,7 @@ export class FixturesService {
     }
   }
 
-  public async getFixturesByTeamId(
+  public static async getFixturesByTeamId(
     teamId: string,
   ): Promise<GetAllFixturesResponse> {
     try {
@@ -191,7 +191,7 @@ export class FixturesService {
     }
   }
 
-  public async getUpcomingFixtures(): Promise<GetAllFixturesResponse> {
+  public static async getUpcomingFixtures(): Promise<GetAllFixturesResponse> {
     try {
       const response = await axios.request<GetAllFixturesResponse>({
         method: "GET",

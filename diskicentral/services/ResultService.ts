@@ -12,7 +12,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL
   : "";
 
 export class ResultsService {
-  public async getApiResults(): Promise<GetAllResultsResponse> {
+  public static async getApiResults(): Promise<GetAllResultsResponse> {
     try {
       const response = await axios.request<GetAllResultsResponse>({
         method: "GET",
@@ -33,7 +33,7 @@ export class ResultsService {
     }
   }
 
-  public async addResult(result: AddResult): Promise<GetResultResponse> {
+  public static async addResult(result: AddResult): Promise<GetResultResponse> {
     try {
       const response = await axios.request<GetResultResponse>({
         method: "POST",
@@ -58,7 +58,7 @@ export class ResultsService {
     }
   }
 
-  public async getResultById(id: string): Promise<GetResultResponse> {
+  public static async getResultById(id: string): Promise<GetResultResponse> {
     try {
       const response = await axios.request<GetResultResponse>({
         method: "GET",
@@ -79,7 +79,7 @@ export class ResultsService {
     }
   }
 
-  public async updateResult(
+  public static async updateResult(
     id: string,
     result: UpdateResult,
   ): Promise<GetResultResponse> {
@@ -107,7 +107,7 @@ export class ResultsService {
     }
   }
 
-  public async deleteResult(id: string): Promise<BooleanResponse> {
+  public static async deleteResult(id: string): Promise<BooleanResponse> {
     try {
       const response = await axios.request<BooleanResponse>({
         method: "DELETE",
@@ -128,7 +128,7 @@ export class ResultsService {
     }
   }
 
-  public async getResultByFixtureId(
+  public static async getResultByFixtureId(
     fixtureId: string,
   ): Promise<GetResultResponse> {
     try {
