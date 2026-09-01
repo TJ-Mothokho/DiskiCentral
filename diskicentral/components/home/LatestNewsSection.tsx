@@ -24,7 +24,7 @@ export default function LatestNewsSection({
         </h2>
 
         <Link
-          href="/news"
+          href="/articles"
           className="flex items-center gap-1 text-sm text-[#00C853] font-semibold hover:gap-2 transition-all">
           All News
           <ArrowRight size={14} />
