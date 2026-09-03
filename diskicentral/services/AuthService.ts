@@ -1,6 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import {
   AuthResponse,
+  AuthResponseEnvelope,
   ChangePassword,
   ConfirmEmail,
   ExternalAuth,
@@ -49,8 +50,8 @@ export class AuthService {
     }
   }
 
-  public async register(registerData: Register): Promise<AuthResponse> {
-    return this.request<AuthResponse>(
+  public async register(registerData: Register): Promise<AuthResponseEnvelope> {
+    return this.request<AuthResponseEnvelope>(
       {
         method: "POST",
         url: `${BASE_URL}/api/Auth/register`,

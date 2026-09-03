@@ -10,7 +10,7 @@ import {
 } from "react";
 import { AuthService } from "@/services/AuthService";
 import { TokenStorage } from "@/services/TokenStorage";
-import type { Login, Register } from "@/types/auth";
+import type { AuthResponse, Login, Register } from "@/types/auth";
 import type { User } from "@/types/user";
 
 type AuthContextType = {
@@ -50,11 +50,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const persisted = TokenStorage.getPersistedAuth();
     if (persisted && !TokenStorage.isExpired()) {
-      setUser(persisted.user);
+      queueMicrotask(() => {
+        setUser(persisted.user);
+        setIsLoading(false);
+      });
     } else if (persisted) {
       TokenStorage.clear();
+      queueMicrotask(() => setIsLoading(false));
+    } else {
+      queueMicrotask(() => setIsLoading(false));
     }
-    setIsLoading(false);
   }, []);
 
   // Any request that comes back 401 clears the token; keep this state in sync.
@@ -68,37 +73,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Persists the token first (so the authenticated /me call is authorized),
   // then fetches the full, accurate user record rather than trusting the
   // partial fields on the auth response.
-  const persistSession = useCallback(
-    async (auth: {
-      token: string;
-      refreshToken: string;
-      expiresIn: number;
-      userId: string;
-      name: string;
-      email: string;
-    }) => {
-      TokenStorage.setAuth({
-        token: auth.token,
-        refreshToken: auth.refreshToken,
-        expiresIn: auth.expiresIn,
-        user: {
-          id: auth.userId,
-          name: auth.name,
-          email: auth.email,
-        } as User,
-      });
+  const persistSession = useCallback(async (auth: AuthResponse) => {
+    TokenStorage.setAuth({
+      token: auth.token,
+      refreshToken: auth.refreshToken,
+      expiresIn: auth.expiresIn,
+      user: {
+        id: auth.userId,
+        name: auth.name,
+        email: auth.email,
+      } as User,
+    });
 
-      try {
-        const me = await authService.getCurrentUser();
-        TokenStorage.setUser(me.data);
-      } catch {
-        // Fall back to the partial user from the auth response if /me fails.
-      }
+    try {
+      const me = await authService.getCurrentUser();
+      TokenStorage.setUser(me.data);
+    } catch {
+      // Fall back to the partial user from the auth response if /me fails.
+    }
 
-      setUser(TokenStorage.getUser());
-    },
-    [],
-  );
+    setUser(TokenStorage.getUser());
+  }, []);
 
   const login = useCallback(
     async (credentials: Login) => {
@@ -112,8 +107,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (data: Register) => {
       const response = await authService.register(data);
 
-      if (!response.requiresEmailConfirmation) {
-        await persistSession(response);
+      if (response.data && !response.data.requiresEmailConfirmation) {
+        await persistSession(response.data);
       }
     },
     [persistSession],
