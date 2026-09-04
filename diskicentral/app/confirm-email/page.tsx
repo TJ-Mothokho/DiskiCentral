@@ -24,6 +24,7 @@ export default function ConfirmEmailPage() {
 function Confirmation() {
   const params = useSearchParams();
   const token = params.get("token");
+  const email = params.get("email");
   const [message, setMessage] = useState("Confirming your email...");
   const [error, setError] = useState("");
 
@@ -31,12 +32,16 @@ function Confirmation() {
     if (!token) return;
     void new AuthService()
       .confirmEmail({ token })
-      .then(() => setMessage("Your email is confirmed. You can now sign in."))
+      .then(() =>
+        setMessage(
+          `${email ? email + " is" : "Your email is"} confirmed. You can now sign in.`,
+        ),
+      )
       .catch((reason) => {
         setError(String(reason));
         setMessage("");
       });
-  }, [token]);
+  }, [token, email]);
 
   return (
     <AuthShell
