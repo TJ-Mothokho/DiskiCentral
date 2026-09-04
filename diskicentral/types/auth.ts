@@ -4,6 +4,8 @@ export type AuthResponse = {
   userId: string;
   name: string;
   email: string;
+  role?: number;
+  active?: boolean;
   token: string;
   refreshToken: string;
   expiresIn: number;

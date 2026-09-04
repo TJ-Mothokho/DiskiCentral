@@ -12,8 +12,16 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
+  const requestUrl = config.url ?? "";
+  const publicAuthEndpoint =
+    requestUrl.includes("/api/Auth/login") ||
+    requestUrl.includes("/api/Auth/register") ||
+    requestUrl.includes("/api/Auth/forgot-password") ||
+    requestUrl.includes("/api/Auth/confirm-email") ||
+    requestUrl.includes("/api/Auth/resend-confirmation") ||
+    requestUrl.includes("/api/Auth/reset-password");
   const token = TokenStorage.getToken();
-  if (token) {
+  if (token && !publicAuthEndpoint) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
   }

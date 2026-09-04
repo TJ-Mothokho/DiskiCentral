@@ -83,32 +83,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener("auth:unauthorized", handleUnauthorized);
   }, []);
 
-  // Persists the token first (so the authenticated /me call is authorized),
-  // then fetches the full, accurate user record rather than trusting the
-  // partial fields on the auth response.
-  const persistSession = useCallback(
-    async (auth: AuthResponse) => {
-      TokenStorage.setAuth({
-        token: auth.token,
-        refreshToken: auth.refreshToken,
-        expiresIn: auth.expiresIn,
-        user: {
-          id: auth.userId,
-          name: auth.name,
-          email: auth.email,
-        } as User,
-      });
+  // Login already returns the authenticated user identity. Store that response
+  // without making a second protected request during the login transaction.
+  const persistSession = useCallback((auth: AuthResponse) => {
+    const authenticatedUser: User = {
+      id: auth.userId,
+      name: auth.name,
+      email: auth.email,
+      role: auth.role ?? TokenStorage.getRoleFromToken() ?? 3,
+      active: auth.active ?? true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-      const me = await authService.getCurrentUser();
-      if (!me.data) {
-        clearSession();
-        throw new Error("Unable to verify the authenticated user.");
-      }
-      TokenStorage.setUser(me.data);
-      setUser(me.data);
-    },
-    [clearSession],
-  );
+    TokenStorage.setAuth({
+      token: auth.token,
+      refreshToken: auth.refreshToken,
+      expiresIn: auth.expiresIn,
+      user: authenticatedUser,
+    });
+    setUser(authenticatedUser);
+  }, []);
 
   const refreshUser = useCallback(async () => {
     const response = await authService.getCurrentUser();
@@ -139,7 +134,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      await authService.logout();
+      if (TokenStorage.getToken()) {
+        await authService.logout();
+      }
+    } catch {
+      // Local logout must still succeed when the token is expired or revoked.
     } finally {
       clearSession();
     }

@@ -28,6 +28,7 @@ export class AuthService {
   private async request<T>(
     options: AxiosRequestConfig,
     errorMessage: string,
+    suppressErrorLog = false,
   ): Promise<T> {
     try {
       const response = await apiClient.request<T>(options);
@@ -45,7 +46,9 @@ export class AuthService {
 
       return response.data;
     } catch (error) {
-      console.error(errorMessage, error);
+      if (!suppressErrorLog) {
+        console.error(errorMessage, error);
+      }
       throw `${errorMessage} Please try again.`;
     }
   }
@@ -65,7 +68,7 @@ export class AuthService {
   }
 
   public async login(loginData: Login): Promise<AuthResponse> {
-    return this.request<AuthResponse>(
+    const response = await this.request<AuthResponse | AuthResponseEnvelope>(
       {
         method: "POST",
         url: `${BASE_URL}/api/Auth/login`,
@@ -76,6 +79,15 @@ export class AuthService {
       },
       "Failed to log in.",
     );
+
+    if ("data" in response) {
+      if (!response.data) {
+        throw "Login did not return an authenticated user.";
+      }
+      return response.data;
+    }
+
+    return response as AuthResponse;
   }
 
   public async refreshToken(
@@ -217,6 +229,7 @@ export class AuthService {
         url: `${BASE_URL}/api/Auth/logout`,
       },
       "Failed to log out.",
+      true,
     );
   }
 }

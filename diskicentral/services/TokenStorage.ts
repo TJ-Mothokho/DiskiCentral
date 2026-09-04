@@ -54,6 +54,26 @@ function safeRemove(key: string): void {
 }
 
 export const TokenStorage = {
+  getRoleFromToken(): number | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const payload = token.split(".")[1];
+      if (!payload) return null;
+      const claims = JSON.parse(
+        atob(payload.replace(/-/g, "+").replace(/_/g, "/")),
+      ) as Record<string, unknown>;
+      const rawRole =
+        claims.role ??
+        claims["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+      const role = typeof rawRole === "number" ? rawRole : Number(rawRole);
+      return Number.isInteger(role) ? role : null;
+    } catch {
+      return null;
+    }
+  },
+
   getToken(): string | null {
     return safeGet(TOKEN_KEY);
   },
