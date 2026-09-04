@@ -81,8 +81,7 @@ export default function Navbar({
           : "bg-white border-b border-gray-200"
       } ${darkMode ? "bg-black! border-gray-800!" : ""}`}>
       {/* Top bar */}
-      <div
-        className={`bg-black py-1.5 px-4 ${darkMode ? "bg-[#111]" : ""}`}>
+      <div className={`bg-black py-1.5 px-4 ${darkMode ? "bg-[#111]" : ""}`}>
         <div className="max-w-360 mx-auto flex items-center justify-between">
           <span className="text-xs text-gray-400 font-medium tracking-wide">
             South African Football. Every Day.
@@ -198,23 +197,28 @@ export default function Navbar({
               {darkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
 
-            {!isLoading && (user ? (
-              <>
-                <Link href="/profile" className="hidden sm:block px-3 py-2 text-sm font-semibold text-gray-700 hover:text-gray-900">
-                  {user.name}
+            {!isLoading &&
+              (user ? (
+                <>
+                  <Link
+                    href="/profile"
+                    className="hidden sm:block px-3 py-2 text-sm font-semibold text-gray-700 hover:text-gray-900">
+                    {user.name}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => void logout().then(() => router.push("/"))}
+                    className="hidden sm:block px-3 py-2 text-sm font-semibold text-gray-500 hover:text-gray-900">
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="hidden sm:block px-3 py-2 text-sm font-semibold text-green-dark hover:text-gray-900">
+                  Sign in
                 </Link>
-                <button
-                  type="button"
-                  onClick={() => void logout().then(() => router.push("/"))}
-                  className="hidden sm:block px-3 py-2 text-sm font-semibold text-gray-500 hover:text-gray-900">
-                  Sign out
-                </button>
-              </>
-            ) : (
-              <Link href="/login" className="hidden sm:block px-3 py-2 text-sm font-semibold text-green-dark hover:text-gray-900">
-                Sign in
-              </Link>
-            ))}
+              ))}
 
             {/* Mobile menu toggle */}
             <button

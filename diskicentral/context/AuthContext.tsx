@@ -30,7 +30,9 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   register: async () => {},
   logout: async () => {},
-  refreshUser: async () => { throw new Error("Authentication provider is unavailable."); },
+  refreshUser: async () => {
+    throw new Error("Authentication provider is unavailable.");
+  },
 });
 
 const authService = new AuthService();
@@ -84,26 +86,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Persists the token first (so the authenticated /me call is authorized),
   // then fetches the full, accurate user record rather than trusting the
   // partial fields on the auth response.
-  const persistSession = useCallback(async (auth: AuthResponse) => {
-    TokenStorage.setAuth({
-      token: auth.token,
-      refreshToken: auth.refreshToken,
-      expiresIn: auth.expiresIn,
-      user: {
-        id: auth.userId,
-        name: auth.name,
-        email: auth.email,
-      } as User,
-    });
+  const persistSession = useCallback(
+    async (auth: AuthResponse) => {
+      TokenStorage.setAuth({
+        token: auth.token,
+        refreshToken: auth.refreshToken,
+        expiresIn: auth.expiresIn,
+        user: {
+          id: auth.userId,
+          name: auth.name,
+          email: auth.email,
+        } as User,
+      });
 
-    const me = await authService.getCurrentUser();
-    if (!me.data) {
-      clearSession();
-      throw new Error("Unable to verify the authenticated user.");
-    }
-    TokenStorage.setUser(me.data);
-    setUser(me.data);
-  }, [clearSession]);
+      const me = await authService.getCurrentUser();
+      if (!me.data) {
+        clearSession();
+        throw new Error("Unable to verify the authenticated user.");
+      }
+      TokenStorage.setUser(me.data);
+      setUser(me.data);
+    },
+    [clearSession],
+  );
 
   const refreshUser = useCallback(async () => {
     const response = await authService.getCurrentUser();
