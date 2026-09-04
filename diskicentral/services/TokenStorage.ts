@@ -17,10 +17,19 @@ function isBrowser(): boolean {
   return typeof window !== "undefined";
 }
 
+function getStorage(): Storage | null {
+  if (!isBrowser()) return null;
+  try {
+    return window.sessionStorage;
+  } catch {
+    return null;
+  }
+}
+
 function safeGet(key: string): string | null {
   if (!isBrowser()) return null;
   try {
-    return window.localStorage.getItem(key);
+    return getStorage()?.getItem(key) ?? null;
   } catch {
     return null;
   }
@@ -29,7 +38,7 @@ function safeGet(key: string): string | null {
 function safeSet(key: string, value: string): void {
   if (!isBrowser()) return;
   try {
-    window.localStorage.setItem(key, value);
+    getStorage()?.setItem(key, value);
   } catch {
     // Storage may be unavailable (private mode, quota exceeded, etc.) - fail silently.
   }
@@ -38,7 +47,7 @@ function safeSet(key: string, value: string): void {
 function safeRemove(key: string): void {
   if (!isBrowser()) return;
   try {
-    window.localStorage.removeItem(key);
+    getStorage()?.removeItem(key);
   } catch {
     // ignore
   }

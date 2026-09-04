@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Search, Moon, Sun, Menu, X, ChevronDown } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -49,6 +50,7 @@ export default function Navbar({
   const [searchQuery, setSearchQuery] = useState("");
   const pathname = usePathname();
   const router = useRouter();
+  const { user, isLoading, logout } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -195,6 +197,24 @@ export default function Navbar({
               aria-label="Toggle dark mode">
               {darkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
+
+            {!isLoading && (user ? (
+              <>
+                <Link href="/profile" className="hidden sm:block px-3 py-2 text-sm font-semibold text-gray-700 hover:text-gray-900">
+                  {user.name}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => void logout().then(() => router.push("/"))}
+                  className="hidden sm:block px-3 py-2 text-sm font-semibold text-gray-500 hover:text-gray-900">
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <Link href="/login" className="hidden sm:block px-3 py-2 text-sm font-semibold text-green-dark hover:text-gray-900">
+                Sign in
+              </Link>
+            ))}
 
             {/* Mobile menu toggle */}
             <button

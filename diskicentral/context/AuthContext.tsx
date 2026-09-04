@@ -20,6 +20,7 @@ type AuthContextType = {
   login: (credentials: Login) => Promise<void>;
   register: (data: Register) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<User>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -29,6 +30,7 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   register: async () => {},
   logout: async () => {},
+  refreshUser: async () => { throw new Error("Authentication provider is unavailable."); },
 });
 
 const authService = new AuthService();
@@ -48,19 +50,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Restore whatever was persisted from a previous session on first load.
   useEffect(() => {
-    const persisted = TokenStorage.getPersistedAuth();
-    if (persisted && !TokenStorage.isExpired()) {
-      queueMicrotask(() => {
-        setUser(persisted.user);
+    const restore = async () => {
+      const persisted = TokenStorage.getPersistedAuth();
+      if (!persisted || TokenStorage.isExpired()) {
+        if (persisted) TokenStorage.clear();
         setIsLoading(false);
-      });
-    } else if (persisted) {
-      TokenStorage.clear();
-      queueMicrotask(() => setIsLoading(false));
-    } else {
-      queueMicrotask(() => setIsLoading(false));
-    }
-  }, []);
+        return;
+      }
+
+      try {
+        const response = await authService.getCurrentUser();
+        if (!response.data) throw new Error("No authenticated user returned.");
+        TokenStorage.setUser(response.data);
+        setUser(response.data);
+      } catch {
+        clearSession();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void restore();
+  }, [clearSession]);
 
   // Any request that comes back 401 clears the token; keep this state in sync.
   useEffect(() => {
@@ -85,14 +96,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } as User,
     });
 
-    try {
-      const me = await authService.getCurrentUser();
-      TokenStorage.setUser(me.data);
-    } catch {
-      // Fall back to the partial user from the auth response if /me fails.
+    const me = await authService.getCurrentUser();
+    if (!me.data) {
+      clearSession();
+      throw new Error("Unable to verify the authenticated user.");
     }
+    TokenStorage.setUser(me.data);
+    setUser(me.data);
+  }, [clearSession]);
 
-    setUser(TokenStorage.getUser());
+  const refreshUser = useCallback(async () => {
+    const response = await authService.getCurrentUser();
+    if (!response.data) throw new Error("Unable to fetch the current user.");
+    TokenStorage.setUser(response.data);
+    setUser(response.data);
+    return response.data;
   }, []);
 
   const login = useCallback(
@@ -130,8 +148,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       login,
       register,
       logout,
+      refreshUser,
     }),
-    [user, isLoading, login, register, logout],
+    [user, isLoading, login, register, logout, refreshUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
