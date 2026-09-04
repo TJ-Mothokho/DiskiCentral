@@ -3,6 +3,7 @@
 import { ShieldAlert } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import AdminShell from "@/components/admin/AdminShell";
+import { redirect } from "next/navigation";
 
 export default function AdminGate({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -29,6 +30,12 @@ export default function AdminGate({ children }: { children: React.ReactNode }) {
             You must be signed in with an administrator role to access this
             area.
           </p>
+          <button
+            type="button"
+            onClick={() => redirect("/")}
+            className="mt-6 px-4 py-2 bg-red-400 text-black font-bold text-sm rounded-lg hover:bg-red-500">
+            Go to Home
+          </button>
         </div>
       </main>
     );
