@@ -1,0 +1,262 @@
+import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
+import ArticleCard from "../../components/ArticleCard";
+import MatchCard from "../../components/MatchCard";
+
+import competitions from "../../data/competitions.json";
+import articles from "../../data/articles.json";
+import fixtures from "../../data/fixtures.json";
+import results from "../../data/results.json";
+import standingsData from "../../data/standings.json";
+
+interface CompetitionPageProps { darkMode: boolean }
+
+export default function CompetitionPage({ darkMode }: CompetitionPageProps) {
+  const { slug } = useParams<{ slug: string }>();
+  const [activeTab, setActiveTab] = useState("overview");
+
+  const competition = competitions.find((c) => c.slug === slug);
+  if (!competition) {
+    return (
+      <div className="max-w-[1440px] mx-auto px-4 py-24 text-center">
+        <h1 className="font-display font-bold text-4xl mb-4">Competition Not Found</h1>
+        <Link to="/" className="text-[#00C853] font-semibold">← Back to Home</Link>
+      </div>
+    );
+  }
+
+  const compArticles = articles.filter((a) =>
+    a.categorySlug === competition.slug ||
+    (competition.slug === "caf-champions-league" && a.categorySlug === "caf") ||
+    (competition.slug === "caf-confederation-cup" && a.categorySlug === "caf")
+  ).slice(0, 6);
+
+  const compFixtures = fixtures.filter((f) =>
+    f.competitionSlug === slug || (slug?.includes("caf") && f.competitionSlug?.includes("caf"))
+  );
+  const compResults = results.filter((r) =>
+    r.competitionSlug === slug || (slug?.includes("caf") && r.competitionSlug?.includes("caf"))
+  );
+
+  const standings = slug === "psl" ? standingsData.psl : standingsData.cafCL;
+
+  const tabs = ["overview", "news", "fixtures", "results", "standings"];
+
+  return (
+    <main className="max-w-[1440px] mx-auto px-4 py-6">
+      {/* Header */}
+      <div className={`rounded-2xl p-8 mb-6 ${darkMode ? "bg-gray-900 border border-gray-800" : "bg-white border border-gray-100"}`}>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+          <div
+            className="w-20 h-20 rounded-xl overflow-hidden bg-gray-200 shrink-0"
+            style={{ borderBottom: `4px solid ${competition.color}` }}
+          >
+            <img src={competition.logo} alt={competition.name} className="w-full h-full object-cover" />
+          </div>
+          <div>
+            <div className={`text-sm font-semibold uppercase tracking-wide mb-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
+              {competition.country} · Season {competition.season}
+            </div>
+            <h1 className={`font-display font-bold text-3xl sm:text-4xl ${darkMode ? "text-white" : "text-gray-900"}`}>
+              {competition.name}
+            </h1>
+            <div className="flex items-center gap-4 mt-2">
+              <span className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
+                {competition.teams} teams
+              </span>
+              <span className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
+                Founded {competition.foundedYear}
+              </span>
+              <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${
+                competition.status === "ongoing" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
+              }`}>
+                <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                {competition.status === "ongoing" ? "In Progress" : "Completed"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className={`flex gap-1 p-1 rounded-xl mb-6 w-fit ${darkMode ? "bg-gray-800" : "bg-gray-100"}`}>
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-colors ${
+              activeTab === tab
+                ? "bg-[#00C853] text-black shadow-sm"
+                : darkMode ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-800"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {/* Overview */}
+      {activeTab === "overview" && (
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <h2 className={`font-display font-bold text-2xl mb-4 ${darkMode ? "text-white" : "text-gray-900"}`}>About</h2>
+              <p className={`text-base leading-relaxed mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+                {competition.description}
+              </p>
+              {compArticles.length > 0 && (
+                <>
+                  <h2 className={`font-display font-bold text-2xl mb-4 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                    Latest News
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {compArticles.slice(0, 4).map((article) => (
+                      <ArticleCard key={article.id} article={article} darkMode={darkMode} />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="space-y-5">
+              {/* Quick info */}
+              <div className={`rounded-xl border p-5 ${darkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-100"}`}>
+                <h3 className={`font-display font-bold text-base mb-4 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                  Competition Info
+                </h3>
+                <div className="space-y-3">
+                  {[
+                    { label: "Current Champion", value: competition.currentChampion },
+                    { label: "Season", value: competition.season },
+                    { label: "Teams", value: competition.teams },
+                    { label: "Country", value: competition.country },
+                    { label: "Founded", value: competition.foundedYear },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="flex justify-between">
+                      <span className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-400"}`}>{label}</span>
+                      <span className={`text-xs font-semibold ${darkMode ? "text-gray-200" : "text-gray-700"}`}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Upcoming fixtures */}
+              {compFixtures.length > 0 && (
+                <div>
+                  <h3 className={`font-display font-bold text-base mb-3 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                    Upcoming Fixtures
+                  </h3>
+                  <div className="space-y-3">
+                    {compFixtures.slice(0, 2).map((f) => (
+                      <MatchCard key={f.id} match={f} darkMode={darkMode} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* News tab */}
+      {activeTab === "news" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {compArticles.length > 0 ? (
+            compArticles.map((article) => (
+              <ArticleCard key={article.id} article={article} darkMode={darkMode} />
+            ))
+          ) : (
+            <p className={`col-span-3 text-center py-12 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
+              No articles for this competition yet.
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Fixtures tab */}
+      {activeTab === "fixtures" && (
+        <div className="space-y-3 max-w-2xl">
+          {fixtures.slice(0, 5).map((f) => (
+            <MatchCard key={f.id} match={f} darkMode={darkMode} />
+          ))}
+        </div>
+      )}
+
+      {/* Results tab */}
+      {activeTab === "results" && (
+        <div className="space-y-3 max-w-2xl">
+          {results.map((r) => (
+            <MatchCard key={r.id} match={{ ...r, status: "completed" }} darkMode={darkMode} />
+          ))}
+        </div>
+      )}
+
+      {/* Standings tab */}
+      {activeTab === "standings" && (
+        <div className="overflow-x-auto">
+          <table className={`w-full text-sm rounded-xl overflow-hidden ${darkMode ? "bg-gray-900" : "bg-white"}`}>
+            <thead className={`${darkMode ? "bg-gray-800 text-gray-300" : "bg-gray-50 text-gray-600"}`}>
+              <tr>
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide w-8">#</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide">Team</th>
+                <th className="text-center px-3 py-3 text-xs font-semibold uppercase tracking-wide">P</th>
+                <th className="text-center px-3 py-3 text-xs font-semibold uppercase tracking-wide">W</th>
+                <th className="text-center px-3 py-3 text-xs font-semibold uppercase tracking-wide">D</th>
+                <th className="text-center px-3 py-3 text-xs font-semibold uppercase tracking-wide">L</th>
+                <th className="text-center px-3 py-3 text-xs font-semibold uppercase tracking-wide">GD</th>
+                <th className="text-center px-3 py-3 text-xs font-semibold uppercase tracking-wide font-bold">Pts</th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide">Form</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(standings as any[]).map((row, i) => (
+                <tr key={i} className={`border-t transition-colors ${
+                  darkMode ? "border-gray-800 hover:bg-gray-800" : "border-gray-50 hover:bg-gray-50"
+                } ${i === 0 ? "border-l-2 border-l-[#00C853]" : ""}`}>
+                  <td className={`px-4 py-3 text-center font-semibold ${i < 2 ? "text-[#00C853]" : darkMode ? "text-gray-400" : "text-gray-500"}`}>
+                    {row.position}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Link
+                      to={`/team/${row.teamSlug || row.team?.toLowerCase().replace(/\s+/g, "-")}`}
+                      className={`font-semibold hover:text-[#00C853] transition-colors ${darkMode ? "text-gray-100" : "text-gray-900"}`}
+                    >
+                      {row.team}
+                    </Link>
+                  </td>
+                  <td className={`text-center px-3 py-3 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>{row.played}</td>
+                  <td className={`text-center px-3 py-3 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>{row.won}</td>
+                  <td className={`text-center px-3 py-3 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>{row.drawn}</td>
+                  <td className={`text-center px-3 py-3 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>{row.lost}</td>
+                  <td className={`text-center px-3 py-3 font-medium ${
+                    (row.goalDifference || 0) > 0 ? "text-green-600" :
+                    (row.goalDifference || 0) < 0 ? "text-red-500" :
+                    darkMode ? "text-gray-400" : "text-gray-500"
+                  }`}>{row.goalDifference > 0 ? `+${row.goalDifference}` : row.goalDifference}</td>
+                  <td className={`text-center px-3 py-3 font-display font-bold text-base ${darkMode ? "text-white" : "text-gray-900"}`}>
+                    {row.points}
+                  </td>
+                  <td className="px-4 py-3">
+                    {row.form && (
+                      <div className="flex gap-1">
+                        {row.form.map((f: string, fi: number) => (
+                          <span
+                            key={fi}
+                            className={`w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold text-white ${
+                              f === "W" ? "bg-green-500" : f === "D" ? "bg-yellow-400" : "bg-red-500"
+                            }`}
+                          >
+                            {f}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </main>
+  );
+}
