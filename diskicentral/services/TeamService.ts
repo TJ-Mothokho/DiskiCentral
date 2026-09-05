@@ -16,12 +16,26 @@ export class TeamsService {
   }
 
   public async addTeam(team: AddTeam): Promise<GetTeamResponse> {
+    const formData = new FormData();
+    formData.append("name", team.name);
+    formData.append("slug", team.slug);
+    if (team.shortName) formData.append("shortName", team.shortName);
+    if (team.abbreviation) formData.append("abbreviation", team.abbreviation);
+    if (team.logo) formData.append("logo", team.logo);
+    if (team.colour) formData.append("colour", team.colour);
+    if (team.coach) formData.append("coach", team.coach);
+    if (team.stadium) formData.append("stadium", team.stadium);
+    if (team.city) formData.append("city", team.city);
+    if (team.country) formData.append("country", team.country);
+    formData.append("founded", String(team.founded));
+    if (team.description) formData.append("description", team.description);
+    team.competitionIds.forEach((id) => formData.append("competitionIds", id));
+
     return apiRequest(
       {
         method: "POST",
         url: `${BASE_URL}/api/Teams`,
-        headers: { "Content-Type": "application/json" },
-        data: team,
+        data: formData,
       },
       "Failed to add team.",
     );
@@ -38,12 +52,26 @@ export class TeamsService {
     id: string,
     team: UpdateTeam,
   ): Promise<GetTeamResponse> {
+    const formData = new FormData();
+    if (team.name) formData.append("name", team.name);
+    if (team.slug) formData.append("slug", team.slug);
+    if (team.shortName) formData.append("shortName", team.shortName);
+    if (team.abbreviation) formData.append("abbreviation", team.abbreviation);
+    if (team.logo) formData.append("logo", team.logo);
+    if (team.colour) formData.append("colour", team.colour);
+    if (team.coach) formData.append("coach", team.coach);
+    if (team.stadium) formData.append("stadium", team.stadium);
+    if (team.city) formData.append("city", team.city);
+    if (team.country) formData.append("country", team.country);
+    if (team.founded) formData.append("founded", String(team.founded));
+    if (team.description) formData.append("description", team.description);
+    team.competitionIds.forEach((id) => formData.append("competitionIds", id));
     return apiRequest(
       {
         method: "PUT",
         url: `${BASE_URL}/api/Teams/${encodeURIComponent(id)}`,
-        headers: { "Content-Type": "application/json" },
-        data: team,
+        // headers: { "Content-Type": "application/json" },
+        data: formData,
       },
       "Failed to update team.",
     );

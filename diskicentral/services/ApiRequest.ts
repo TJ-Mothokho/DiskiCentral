@@ -48,6 +48,7 @@ export async function apiRequest<
     const response = await apiClient.request<T>(options);
 
     if (!response.data.success) {
+      console.error("API request failed:", response.data.errors);
       throw response.data.errors
         ? response.data.errors
         : "Unexpected error occurred. Please refresh the page!";

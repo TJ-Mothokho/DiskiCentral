@@ -24,7 +24,7 @@ export type AddTeam = {
   slug: string;
   shortName: string | null;
   abbreviation: string | null;
-  logo: string | null;
+  logo: File | null;
   colour: string | null;
   coach: string | null;
   stadium: string | null;
@@ -35,11 +35,12 @@ export type AddTeam = {
 };
 
 export type UpdateTeam = {
+  competitionIds: string[];
   name: string | null;
   slug: string | null;
   shortName: string | null;
   abbreviation: string | null;
-  logo: string | null;
+  logo: File | null;
   colour: string | null;
   coach: string | null;
   stadium: string | null;
