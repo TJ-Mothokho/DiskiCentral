@@ -1,9 +1,9 @@
 export type GetAllArticlesResponse = {
-  "success": boolean,
-  "message": string,
-  "data": Article[],
-  "errors": string[]
-}
+  success: boolean;
+  message: string;
+  data: Article[];
+  errors: string[];
+};
 
 export type GetArticleResponse = {
   success: boolean;
@@ -49,8 +49,8 @@ export type AddArticle = {
   authorId: string;
   teamId: string | null;
   tagIds: string[];
-  heroImage: string | null;
-  thumbnail: string | null;
+  heroImage: File | null;
+  thumbnail: File | null;
   featured: boolean;
   trending: boolean;
   status: number;
@@ -67,8 +67,8 @@ export type UpdateArticle = {
   authorId: string | null;
   teamId: string | null;
   tagIds: string[];
-  heroImage: string | null;
-  thumbnail: string | null;
+  heroImage: File | null;
+  thumbnail: File | null;
   featured: boolean;
   trending: boolean;
   status: number;
