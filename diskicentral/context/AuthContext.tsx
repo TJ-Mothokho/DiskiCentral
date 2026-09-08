@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { AuthService } from "@/services/AuthService";
+import { AuthorsService } from "@/services/AuthorService";
 import { TokenStorage } from "@/services/TokenStorage";
 import type { AuthResponse, Login, Register } from "@/types/auth";
 import type { User } from "@/types/user";
@@ -36,6 +37,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 const authService = new AuthService();
+const authorsService = new AuthorsService();
 
 export function useAuth() {
   return useContext(AuthContext);
@@ -63,8 +65,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const response = await authService.getCurrentUser();
         if (!response.data) throw new Error("No authenticated user returned.");
-        TokenStorage.setUser(response.data);
-        setUser(response.data);
+        const persistedAuthorId = TokenStorage.getUser()?.authorId ?? null;
+        const restoredUser = {
+          ...response.data,
+          authorId: response.data.authorId ?? persistedAuthorId,
+        };
+        TokenStorage.setUser(restoredUser);
+        setUser(restoredUser);
       } catch {
         clearSession();
       } finally {
@@ -85,9 +92,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Login already returns the authenticated user identity. Store that response
   // without making a second protected request during the login transaction.
-  const persistSession = useCallback((auth: AuthResponse) => {
+  const persistSession = useCallback(async (auth: AuthResponse) => {
+    let authorId = auth.authorId ?? null;
+    if (!authorId) {
+      try {
+        const authorResponse = await authorsService.getAuthorByUserId(auth.userId);
+        authorId = authorResponse.data?.id ?? null;
+      } catch {
+        // A normal user may not have an author profile yet.
+      }
+    }
+
     const authenticatedUser: User = {
       id: auth.userId,
+      authorId,
       name: auth.name,
       email: auth.email,
       role: auth.role ?? TokenStorage.getRoleFromToken() ?? 3,
@@ -116,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(
     async (credentials: Login) => {
       const response = await authService.login(credentials);
-      await persistSession(response);
+    await persistSession(response);
     },
     [persistSession],
   );

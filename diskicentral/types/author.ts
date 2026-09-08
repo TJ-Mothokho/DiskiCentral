@@ -15,7 +15,7 @@ export type AddAuthor = {
   name: string;
   slug: string;
   bio: string | null;
-  avatar: string | null;
+  avatar: File | null;
   twitter: string | null;
 };
 
@@ -23,7 +23,7 @@ export type UpdateAuthor = {
   name: string | null;
   slug: string | null;
   bio: string | null;
-  avatar: string | null;
+  avatar: File | null;
   twitter: string | null;
 };
 

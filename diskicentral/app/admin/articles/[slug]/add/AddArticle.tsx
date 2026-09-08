@@ -10,6 +10,7 @@ import { AuthorsService } from "@/services/AuthorService";
 import { CategoriesService } from "@/services/CategoryService";
 import { TagsService } from "@/services/TagService";
 import { TeamsService } from "@/services/TeamService";
+import { useAuth } from "@/context/AuthContext";
 import type { Article, AddArticle, UpdateArticle } from "@/types/article";
 import type { Author } from "@/types/author";
 import type { Category } from "@/types/category";
@@ -51,7 +52,11 @@ function initialValues(article?: Article): FormValues {
 export default function ArticleForm({ article }: ArticleFormProps) {
   const editing = Boolean(article);
   const router = useRouter();
-  const [values, setValues] = useState<FormValues>(() => initialValues(article));
+  const { user } = useAuth();
+  const [values, setValues] = useState<FormValues>(() => ({
+    ...initialValues(article),
+    authorId: article?.authorId ?? user?.authorId ?? "",
+  }));
   const [authors, setAuthors] = useState<Author[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
