@@ -1,45 +1,20 @@
 "use client";
-import { Article } from "@/types/article";
-import { FormEvent, useState } from "react";
-import { X } from "lucide-react";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import ArticleForm from "@/app/admin/articles/[slug]/add/AddArticle";
 import { ArticlesService } from "@/services/ArticleService";
+import type { Article } from "@/types/article";
 
-const articleService = new ArticlesService();
+export default function EditArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const [article, setArticle] = useState<Article | null>(null);
+  const [error, setError] = useState("");
 
-export function EditArticle({
-  article,
-  onClose,
-  onUpdated,
-}: {
-  article: Article;
-  onClose: () => void;
-  onUpdated: (updated: Article) => void;
-}) {
-  const [name, setName] = useState(article.name);
-  const [slug, setSlug] = useState(article.slug);
-  const [submitting, setSubmitting] = useState(false);
-  const [formError, setFormError] = useState("");
+  useEffect(() => {
+    void params.then(({ slug }) => ArticlesService.getArticleById(slug).then((response) => setArticle(response.data)).catch(() => setError("This article could not be loaded.")));
+  }, [params]);
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
-    setSubmitting(true);
-    setFormError("");
-    try {
-      const response = await articleService.updateArticle(article.id, {
-        name,
-        slug,
-      });
-      onUpdated(response.data);
-    } catch {
-      setFormError("Failed to update article.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <div>
-
-    </div>
-  );
+  if (error) return <div className="space-y-3"><p className="text-sm text-red-300">{error}</p><Link href="/admin/articles" className="text-sm text-[#00C853] hover:underline">Back to articles</Link></div>;
+  if (!article) return <p className="text-sm text-gray-500">Loading article...</p>;
+  return <ArticleForm article={article} />;
 }

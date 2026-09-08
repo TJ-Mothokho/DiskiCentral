@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Plus, Search } from "lucide-react";
+import Link from "next/link";
 import { ArticlesService } from "@/services/ArticleService";
 import type { Article } from "@/types/article";
 
@@ -31,11 +32,11 @@ export default function AdminArticlesPage() {
             {articles.length} total articles
           </p>
         </div>
-        <button
-          type="button"
+        <Link
+          href="/admin/articles/add"
           className="flex items-center gap-1.5 px-4 py-2 bg-[#00C853] text-black font-bold text-sm rounded-lg hover:bg-[#00A344]">
           <Plus size={15} /> New Article
-        </button>
+        </Link>
       </div>
       <div className="relative max-w-sm">
         <Search
@@ -68,7 +69,9 @@ export default function AdminArticlesPage() {
                 key={article.id}
                 className="border-t border-gray-800 hover:bg-gray-900/30">
                 <td className="px-4 py-3 text-gray-200 font-medium min-w-64">
-                  {article.title}
+                  <Link href={`/admin/articles/${article.id}/edit`} className="hover:text-[#00C853]">
+                    {article.title}
+                  </Link>
                 </td>
                 <td className="px-4 py-3 text-xs text-gray-400">
                   {article.categoryName ?? "Uncategorized"}

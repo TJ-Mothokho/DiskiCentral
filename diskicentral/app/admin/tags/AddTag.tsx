@@ -53,8 +53,8 @@ export function AddTagModal({
           </button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input name={name} setName={setName} />
-          <Input name={slug} setName={setSlug} />
+          <Input label="Name" name="name" value={name} onChange={(event) => setName(event.target.value)} required />
+          <Input label="Slug" name="slug" value={slug} onChange={(event) => setSlug(event.target.value)} required />
           {formError && <p className="text-sm text-red-400">{formError}</p>}
           <div className="flex items-center justify-end gap-2 pt-2">
             <button

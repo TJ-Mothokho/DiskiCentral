@@ -1,24 +1,24 @@
-import React from 'react';
+import type { InputHTMLAttributes } from "react";
 
-const Input = ({ name, setName }: InputProps) => {
-    return (
-      <div>
-        <label className="block text-xs font-medium text-gray-400 mb-1">
-          {name.charAt(0).toUpperCase() + name.slice(1)}
-        </label>
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-white outline-none focus:border-[#00C853]"
-        />
-      </div>
-    );
+type InputProps = InputHTMLAttributes<HTMLInputElement> & {
+  label: string;
+  error?: string;
 };
 
-export default Input;
-
-interface InputProps {
-    name: string;
-    setName: (name: string) => void;
+export default function Input({ label, id, error, className = "", ...props }: InputProps) {
+  const inputId = id ?? props.name;
+  return (
+    <div className="space-y-1.5">
+      <label htmlFor={inputId} className="block text-xs font-medium text-gray-400">
+        {label}
+        {props.required && <span className="ml-1 text-[#00C853]">*</span>}
+      </label>
+      <input
+        id={inputId}
+        {...props}
+        className={`w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-white outline-none transition-colors placeholder:text-gray-600 focus:border-[#00C853] disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      />
+      {error && <p className="text-xs text-red-400">{error}</p>}
+    </div>
+  );
 }
