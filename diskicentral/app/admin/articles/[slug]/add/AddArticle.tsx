@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ImagePlus, Loader2, Save } from "lucide-react";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Input from "@/components/ui/Input";
 import { ArticlesService } from "@/services/ArticleService";
 import { AuthorsService } from "@/services/AuthorService";
@@ -16,6 +16,7 @@ import type { Author } from "@/types/author";
 import type { Category } from "@/types/category";
 import type { Tag } from "@/types/tag";
 import type { Team } from "@/types/team";
+import { MarkdownPreview, MarkdownToolbar } from "@/components/article/MarkdownEditor";
 
 const authorsService = new AuthorsService();
 const categoriesService = new CategoriesService();
@@ -66,6 +67,7 @@ export default function ArticleForm({ article }: ArticleFormProps) {
   const [error, setError] = useState("");
   const [heroPreview, setHeroPreview] = useState<string | null>(article?.heroImage ?? null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(article?.thumbnail ?? null);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -112,6 +114,36 @@ export default function ArticleForm({ article }: ArticleFormProps) {
     }
   }
 
+  function updateBody(nextBody: string, selectionStart?: number, selectionEnd?: number) {
+    setField("body", nextBody);
+    window.requestAnimationFrame(() => {
+      if (!bodyRef.current || selectionStart === undefined || selectionEnd === undefined) return;
+      bodyRef.current.focus();
+      bodyRef.current.setSelectionRange(selectionStart, selectionEnd);
+    });
+  }
+
+  function applyMarkdown(prefix: string, suffix = prefix, placeholder = "text") {
+    const textarea = bodyRef.current;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = values.body.slice(start, end) || placeholder;
+    const nextBody = `${values.body.slice(0, start)}${prefix}${selected}${suffix}${values.body.slice(end)}`;
+    updateBody(nextBody, start + prefix.length, start + prefix.length + selected.length);
+  }
+
+  function applyLinePrefix(prefix: string) {
+    const textarea = bodyRef.current;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const lineStart = values.body.lastIndexOf("\n", start - 1) + 1;
+    const selected = values.body.slice(lineStart, end);
+    const nextBody = `${values.body.slice(0, lineStart)}${selected.split("\n").map((line) => `${prefix}${line}`).join("\n")}${values.body.slice(end)}`;
+    updateBody(nextBody, lineStart, lineStart + selected.length + prefix.length * (selected.split("\n").length));
+  }
+
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <div className="flex items-center gap-3">
@@ -126,7 +158,7 @@ export default function ArticleForm({ article }: ArticleFormProps) {
           </div>
           <Input label="Subtitle" name="subtitle" value={values.subtitle ?? ""} onChange={(e) => setField("subtitle", e.target.value || null)} placeholder="A short supporting line" />
           <div className="space-y-1.5"><label htmlFor="excerpt" className="block text-xs font-medium text-gray-400">Excerpt</label><textarea id="excerpt" value={values.excerpt ?? ""} onChange={(e) => setField("excerpt", e.target.value || null)} rows={3} className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-white outline-none focus:border-[#00C853]" placeholder="A concise summary for cards and search results" /></div>
-          <div className="space-y-1.5"><label htmlFor="body" className="block text-xs font-medium text-gray-400">Body <span className="ml-1 text-[#00C853]">*</span></label><textarea id="body" required value={values.body} onChange={(e) => setField("body", e.target.value)} rows={16} className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm leading-6 text-white outline-none focus:border-[#00C853]" placeholder="Write the article body..." /></div>
+          <div className="space-y-1.5"><div className="flex items-center justify-between"><label htmlFor="body" className="block text-xs font-medium text-gray-400">Body <span className="ml-1 text-[#00C853]">*</span></label><span className="text-[11px] text-gray-600">Markdown is saved with the article</span></div><MarkdownToolbar onFormat={applyMarkdown} onLinePrefix={applyLinePrefix} /><div className="grid gap-4 xl:grid-cols-2"><textarea ref={bodyRef} id="body" required value={values.body} onChange={(e) => setField("body", e.target.value)} rows={18} className="w-full resize-y rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm leading-6 text-white outline-none focus:border-[#00C853]" placeholder="Write with Markdown, or use the formatting toolbar..." /><MarkdownPreview markdown={values.body} /></div></div>
         </div>
         <aside className="space-y-5">
           <div className="space-y-4 rounded-xl border border-gray-800 bg-[#111] p-5">

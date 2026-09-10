@@ -7,6 +7,7 @@ import { FormEvent, useState } from "react";
 import CategoryBadge from "@/components/CategoryBadge";
 import { useTheme } from "@/themes/ThemeContext";
 import { Article } from "@/types/article";
+import { MarkdownBody } from "@/components/article/MarkdownEditor";
 import ArticleCard from "./ArticleCard";
 
 interface ArticleContentProps {
@@ -154,9 +155,9 @@ export default function ArticleContent({
             Advertisement
           </div>
 
-          <div
+          <MarkdownBody
+            markdown={article.body}
             className={`prose prose-base max-w-none mb-8 leading-relaxed ${darkMode ? "prose-invert text-gray-200" : "text-gray-800"}`}
-            dangerouslySetInnerHTML={{ __html: article.body }}
           />
 
           {article.tagIds.length > 0 && (
