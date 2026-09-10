@@ -28,6 +28,7 @@ export default function LoginPage() {
     try {
       await login({ email, password });
       router.push("/");
+      router.refresh();
     } catch (reason) {
       setError(String(reason));
     } finally {

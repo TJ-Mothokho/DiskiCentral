@@ -46,7 +46,7 @@ export async function apiRequest<
 >(options: AxiosRequestConfig, errorMessage: string): Promise<T> {
   try {
     const response = await apiClient.request<T>(options);
-
+    console.log(response.data);
     if (!response.data.success) {
       console.error("API request failed:", response.data.errors);
       throw response.data.errors
