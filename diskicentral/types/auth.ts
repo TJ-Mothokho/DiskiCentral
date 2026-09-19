@@ -2,11 +2,9 @@ import type { User } from "./user";
 
 export type AuthResponse = {
   userId: string;
-  authorId?: string | null;
   name: string;
   email: string;
-  role?: number;
-  active?: boolean;
+  role?: string | number;
   token: string;
   refreshToken: string;
   expiresIn: number;

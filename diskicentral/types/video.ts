@@ -14,7 +14,7 @@ export type GetVideoResponse = {
 
 export type Video = {
   id: string;
-  authorId: string;
+  personId: string;
   categoryId: string;
   title: string;
   slug: string;
@@ -26,14 +26,14 @@ export type Video = {
   publishedAt: string;
   createdAt: string;
   updatedAt: string;
-  authorName: string | null;
+  personName: string | null;
   categoryName: string | null;
   embedUrl: string;
   embedCode: string;
 };
 
 export type AddVideo = {
-  authorId: string;
+  personId: string;
   categoryId: string;
   title: string;
   slug: string;
@@ -45,7 +45,7 @@ export type AddVideo = {
 };
 
 export type UpdateVideo = {
-  authorId: string | null,
+  personId: string | null,
   categoryId: string | null,
   title: string | null,
   slug: string | null,

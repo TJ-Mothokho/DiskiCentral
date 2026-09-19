@@ -1,9 +1,8 @@
 export type User = {
   id: string;
-  authorId: string | null;
   name: string;
   email: string;
-  role: number;
+  role: string | number;
   active: boolean;
   createdAt: string;
   updatedAt: string;
@@ -13,12 +12,12 @@ export type AddUser = {
   name: string;
   email: string;
   password: string;
-  role: number;
+  role: string | number;
 };
 
 export type UpdateUser = {
   name: string | null;
-  role: number | null;
+  role: string | number | null;
   active: boolean | null;
 };
 
