@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { type ComponentType, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { canManageUsers } from "@/types/roles";
 import {
   ArrowLeftRight,
   BarChart3,
@@ -25,20 +26,30 @@ import {
   Menu,
   MessageSquare,
   Newspaper,
-  PenSquare,
   Settings,
   Shield,
   Tag,
   Trophy,
   User,
   UserCog,
-  UserRound,
   Users,
   Video,
   X,
 } from "lucide-react";
 
-const sidebarSections = [
+type SidebarItem = {
+  label: string;
+  href: string;
+  icon: ComponentType<{ size?: number; className?: string }>;
+  adminOnly?: boolean;
+};
+
+type SidebarSection = {
+  title: string;
+  items: SidebarItem[];
+};
+
+const sidebarSections: SidebarSection[] = [
   {
     title: "Overview",
     items: [
@@ -90,9 +101,7 @@ const sidebarSections = [
   {
     title: "People",
     items: [
-      { label: "Authors", href: "/admin/authors", icon: PenSquare },
-      { label: "Employees", href: "/admin/users", icon: UserCog }, // where user role is less than 3
-      { label: "Users", href: "/admin/users", icon: UserRound }, // where user role is 3
+      { label: "Users", href: "/admin/users", icon: UserCog, adminOnly: true },
     ],
   },
   // ignore everything below
@@ -121,12 +130,25 @@ export default function AdminShell({
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
+  const canManagePeople = canManageUsers(user?.role);
+  const visibleSidebarSections = useMemo(
+    () =>
+      sidebarSections
+        .map((section) => ({
+          ...section,
+          items: section.items.filter(
+            (item) => !item.adminOnly || canManagePeople,
+          ),
+        }))
+        .filter((section) => section.items.length > 0),
+    [canManagePeople],
+  );
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const isActive = (href: string) =>
     href === "/admin" ? pathname === href : pathname.startsWith(href);
-  const activeSection = sidebarSections.find((section) =>
+  const activeSection = visibleSidebarSections.find((section) =>
     section.items.some((item) => isActive(item.href)),
   )?.title;
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(
@@ -135,7 +157,7 @@ export default function AdminShell({
   const toggleSection = (title: string) =>
     setOpenSections((prev) => ({ ...prev, [title]: !prev[title] }));
   const activeLabel =
-    sidebarSections
+    visibleSidebarSections
       .flatMap((section) => section.items)
       .find((item) => isActive(item.href))?.label ?? "Admin";
   const initials =
@@ -177,7 +199,7 @@ export default function AdminShell({
           </span>
         </div>
         <nav className="flex-1 overflow-y-auto py-3 px-2">
-          {sidebarSections.map((section) => {
+          {visibleSidebarSections.map((section) => {
             const sectionOpen = !!openSections[section.title];
             return (
               <div key={section.title} className="mb-2">

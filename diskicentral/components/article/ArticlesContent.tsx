@@ -48,7 +48,7 @@ export default function ArticlesContent({
       !selectedCategoryId || article.categoryId === selectedCategoryId;
     const textMatch =
       !query ||
-      [article.title, article.excerpt, article.authorName]
+      [article.title, article.excerpt, article.personName]
         .filter((value): value is string => Boolean(value))
         .some((value) => value.toLowerCase().includes(query));
     return categoryMatch && textMatch;

@@ -21,13 +21,13 @@ function articleFormData(article: AddArticle | UpdateArticle) {
   append("excerpt", article.excerpt);
   append("body", article.body);
   append("categoryId", article.categoryId);
-  append("authorId", article.authorId);
+  append("personId", article.personId);
   append("teamId", article.teamId);
   article.tagIds.forEach((tagId) => formData.append("tagIds", tagId));
   append("featured", article.featured);
   append("trending", article.trending);
-  append("status", article.status);
-  append("publishedAt", article.publishedAt);
+  if ("status" in article) append("status", article.status);
+  if ("publishedAt" in article) append("publishedAt", article.publishedAt);
   if (article.heroImage) formData.append("heroImage", article.heroImage);
   if (article.thumbnail) formData.append("thumbnail", article.thumbnail);
   return formData;
@@ -84,8 +84,8 @@ export class ArticlesService {
     return apiRequest({ method: "GET", url: `${BASE_URL}/api/Articles/trending` }, "Failed to fetch trending articles.");
   }
 
-  public static async getArticlesByAuthorId(authorId: string): Promise<GetAllArticlesResponse> {
-    return apiRequest({ method: "GET", url: `${BASE_URL}/api/Articles/author/${encodeURIComponent(authorId)}` }, "Failed to fetch articles by author.");
+  public static async getArticlesByPersonId(personId: string): Promise<GetAllArticlesResponse> {
+    return apiRequest({ method: "GET", url: `${BASE_URL}/api/Articles/person/${encodeURIComponent(personId)}` }, "Failed to fetch articles by person.");
   }
 
   public static async getArticlesByCategoryId(categoryId: string): Promise<GetAllArticlesResponse> {

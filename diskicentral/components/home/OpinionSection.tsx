@@ -54,7 +54,7 @@ export default function OpinionSection({
               </h3>
               <p
                 className={`text-xs mt-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
-                {article.authorName ?? "DiskiCentral"}
+                {article.personName ?? "DiskiCentral"}
               </p>
             </div>
           </Link>

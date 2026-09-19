@@ -104,7 +104,7 @@ export default function ArticleCard({
           className={`flex items-center gap-2 mt-2 text-xs ${
             darkMode ? "text-gray-500" : "text-gray-400"
           }`}>
-          <span>{article.authorName ?? "Unknown Author"}</span>
+          <span>{article.personName ?? "Unknown Author"}</span>
 
           <span>·</span>
 
@@ -165,7 +165,7 @@ export default function ArticleCard({
           }`}>
           <div className="flex items-center gap-1.5">
             <span className="font-medium">
-              {article.authorName ?? "Unknown Author"}
+              {article.personName ?? "Unknown Author"}
             </span>
 
             <span>·</span>

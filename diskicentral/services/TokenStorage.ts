@@ -1,4 +1,5 @@
 import type { User } from "@/types/user";
+import { normalizeRole } from "@/types/roles";
 
 const TOKEN_KEY = "diski_access_token";
 const REFRESH_TOKEN_KEY = "diski_refresh_token";
@@ -67,8 +68,7 @@ export const TokenStorage = {
       const rawRole =
         claims.role ??
         claims["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-      const role = typeof rawRole === "number" ? rawRole : Number(rawRole);
-      return Number.isInteger(role) ? role : null;
+      return normalizeRole(rawRole as string | number | null | undefined);
     } catch {
       return null;
     }

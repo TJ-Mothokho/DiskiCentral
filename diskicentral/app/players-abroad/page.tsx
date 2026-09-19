@@ -64,7 +64,7 @@ export default async function PlayersAbroadPage() {
           const playerArticles = (articlesResponse.data ?? []).filter(
             (article) =>
               article.title.toLowerCase().includes(player.name.toLowerCase()) ||
-              article.authorName
+              article.personName
                 ?.toLowerCase()
                 .includes(player.name.toLowerCase()),
           );
@@ -186,7 +186,7 @@ export default async function PlayersAbroadPage() {
                   </h3>
                   <p
                     className={`text-xs mt-2 ${darkMode ? "text-gray-500" : "text-gray-400"}`}>
-                    {article.authorName ?? "DiskiCentral"} ·{" "}
+                    {article.personName ?? "DiskiCentral"} ·{" "}
                     {article.readingTime} min read
                   </p>
                 </div>

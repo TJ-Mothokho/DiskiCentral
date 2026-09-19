@@ -79,11 +79,16 @@ export class UsersService {
     );
   }
 
-  public async updateUserRole(id: string): Promise<BooleanResponse> {
+  public async updateUserRole(
+    id: string,
+    role: string | number,
+  ): Promise<BooleanResponse> {
     return apiRequest(
       {
         method: "PUT",
         url: `${BASE_URL}/api/Users/${encodeURIComponent(id)}/role`,
+        headers: { "Content-Type": "application/json" },
+        data: { role },
       },
       "Failed to update user role.",
     );

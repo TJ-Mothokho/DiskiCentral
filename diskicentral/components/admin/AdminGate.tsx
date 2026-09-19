@@ -4,6 +4,7 @@ import { ShieldAlert } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import AdminShell from "@/components/admin/AdminShell";
 import { redirect } from "next/navigation";
+import { canAccessAdminPanel } from "@/types/roles";
 
 export default function AdminGate({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -16,9 +17,8 @@ export default function AdminGate({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const hasAdminRole =
-    user !== null && Number.isInteger(user.role) && user.role < 3;
-  if (!hasAdminRole) {
+  const hasAdminAccess = user !== null && canAccessAdminPanel(user.role);
+  if (!hasAdminAccess) {
     return (
       <main className="min-h-screen bg-[#0F0F0F] text-gray-300 flex items-center justify-center px-6">
         <div className="max-w-md text-center">

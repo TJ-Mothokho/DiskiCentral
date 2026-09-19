@@ -6,25 +6,31 @@ import { ArrowLeft, ImagePlus, Loader2, Save } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Input from "@/components/ui/Input";
 import { ArticlesService } from "@/services/ArticleService";
-import { AuthorsService } from "@/services/AuthorService";
 import { CategoriesService } from "@/services/CategoryService";
 import { TagsService } from "@/services/TagService";
 import { TeamsService } from "@/services/TeamService";
+import { UsersService } from "@/services/UserService";
 import { useAuth } from "@/context/AuthContext";
 import type { Article, AddArticle, UpdateArticle } from "@/types/article";
-import type { Author } from "@/types/author";
 import type { Category } from "@/types/category";
 import type { Tag } from "@/types/tag";
 import type { Team } from "@/types/team";
+import type { User } from "@/types/user";
+import { canWriteArticles } from "@/types/roles";
 import { MarkdownPreview, MarkdownToolbar } from "@/components/article/MarkdownEditor";
 
-const authorsService = new AuthorsService();
 const categoriesService = new CategoriesService();
 const tagsService = new TagsService();
 const teamsService = new TeamsService();
+const usersService = new UsersService();
 
 type ArticleFormProps = { article?: Article };
-type FormValues = Omit<AddArticle, "heroImage" | "thumbnail"> & { heroImage: File | null; thumbnail: File | null };
+type FormValues = Omit<AddArticle, "heroImage" | "thumbnail"> & {
+  heroImage: File | null;
+  thumbnail: File | null;
+  status: number;
+  publishedAt: string | null;
+};
 
 function slugify(value: string) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -38,7 +44,7 @@ function initialValues(article?: Article): FormValues {
     excerpt: article?.excerpt ?? null,
     body: article?.body ?? "",
     categoryId: article?.categoryId ?? "",
-    authorId: article?.authorId ?? "",
+    personId: article?.personId ?? "",
     teamId: article?.teamId ?? null,
     tagIds: article?.tagIds ?? [],
     heroImage: null,
@@ -56,9 +62,9 @@ export default function ArticleForm({ article }: ArticleFormProps) {
   const { user } = useAuth();
   const [values, setValues] = useState<FormValues>(() => ({
     ...initialValues(article),
-    authorId: article?.authorId ?? user?.authorId ?? "",
+    personId: article?.personId ?? user?.id ?? "",
   }));
-  const [authors, setAuthors] = useState<Author[]>([]);
+  const [people, setPeople] = useState<User[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -71,10 +77,10 @@ export default function ArticleForm({ article }: ArticleFormProps) {
 
   useEffect(() => {
     let active = true;
-    Promise.all([authorsService.getApiAuthors(), categoriesService.getApiCategories(), tagsService.getApiTags(), teamsService.getApiTeams()])
-      .then(([authorResponse, categoryResponse, tagResponse, teamResponse]) => {
+    Promise.all([usersService.getApiUsers(), categoriesService.getApiCategories(), tagsService.getApiTags(), teamsService.getApiTeams()])
+      .then(([userResponse, categoryResponse, tagResponse, teamResponse]) => {
         if (!active) return;
-        setAuthors(authorResponse.data ?? []);
+        setPeople((userResponse.data ?? []).filter((person) => canWriteArticles(person.role)));
         setCategories(categoryResponse.data ?? []);
         setTags(tagResponse.data ?? []);
         setTeams(teamResponse.data ?? []);
@@ -101,7 +107,7 @@ export default function ArticleForm({ article }: ArticleFormProps) {
     setError("");
     try {
       if (editing && article) {
-        const payload: UpdateArticle = { ...values, title: values.title, slug: values.slug, body: values.body, categoryId: values.categoryId, authorId: values.authorId };
+        const payload: UpdateArticle = { ...values, title: values.title, slug: values.slug, body: values.body, categoryId: values.categoryId, personId: values.personId };
         await ArticlesService.updateArticle(article.id, payload);
       } else {
         await ArticlesService.addArticle(values);
@@ -171,7 +177,7 @@ export default function ArticleForm({ article }: ArticleFormProps) {
           <div className="space-y-4 rounded-xl border border-gray-800 bg-[#111] p-5">
             <h2 className="text-sm font-semibold text-white">Classification</h2>
             <div className="space-y-1.5"><label htmlFor="categoryId" className="block text-xs font-medium text-gray-400">Category <span className="ml-1 text-[#00C853]">*</span></label><select required id="categoryId" value={values.categoryId} onChange={(e) => setField("categoryId", e.target.value)} disabled={loadingOptions} className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-white outline-none focus:border-[#00C853]"><option value="">Select category</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></div>
-            <div className="space-y-1.5"><label htmlFor="authorId" className="block text-xs font-medium text-gray-400">Author <span className="ml-1 text-[#00C853]">*</span></label><select required id="authorId" value={values.authorId} onChange={(e) => setField("authorId", e.target.value)} disabled={loadingOptions} className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-white outline-none focus:border-[#00C853]"><option value="">Select author</option>{authors.map((author) => <option key={author.id} value={author.id}>{author.name}</option>)}</select></div>
+            <div className="space-y-1.5"><label htmlFor="personId" className="block text-xs font-medium text-gray-400">Writer <span className="ml-1 text-[#00C853]">*</span></label><select required id="personId" value={values.personId} onChange={(e) => setField("personId", e.target.value)} disabled={loadingOptions} className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-white outline-none focus:border-[#00C853]"><option value="">Select writer</option>{people.map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}</select></div>
             <div className="space-y-1.5"><label htmlFor="teamId" className="block text-xs font-medium text-gray-400">Team</label><select id="teamId" value={values.teamId ?? ""} onChange={(e) => setField("teamId", e.target.value || null)} disabled={loadingOptions} className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-white outline-none focus:border-[#00C853]"><option value="">No team</option>{teams.map((team) => <option key={team.id} value={team.id}>{team.name}</option>)}</select></div>
             <div className="space-y-1.5"><p className="text-xs font-medium text-gray-400">Tags</p><div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto">{tags.map((tag) => <label key={tag.id} className={`cursor-pointer rounded-full border px-2.5 py-1 text-xs ${selectedTagNames.has(tag.id) ? "border-[#00C853] bg-[#00C853]/10 text-[#00C853]" : "border-gray-700 text-gray-400"}`}><input type="checkbox" className="sr-only" checked={selectedTagNames.has(tag.id)} onChange={(e) => setField("tagIds", e.target.checked ? [...values.tagIds, tag.id] : values.tagIds.filter((id) => id !== tag.id))} />{tag.name}</label>)}</div></div>
           </div>

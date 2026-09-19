@@ -5,6 +5,7 @@ export type AuthResponse = {
   name: string;
   email: string;
   role?: string | number;
+  active?: boolean;
   token: string;
   refreshToken: string;
   expiresIn: number;

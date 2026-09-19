@@ -17,7 +17,7 @@ export default function AdminArticlesPage() {
   }, []);
 
   const filtered = articles.filter((article) =>
-    [article.title, article.authorName, article.categoryName].some((value) =>
+    [article.title, article.personName, article.categoryName].some((value) =>
       value?.toLowerCase().includes(search.toLowerCase()),
     ),
   );
@@ -77,7 +77,7 @@ export default function AdminArticlesPage() {
                   {article.categoryName ?? "Uncategorized"}
                 </td>
                 <td className="px-4 py-3 text-xs text-gray-400">
-                  {article.authorName ?? "Unknown"}
+                  {article.personName ?? "Unknown"}
                 </td>
                 <td className="px-4 py-3 text-xs text-gray-400">
                   {article.views.toLocaleString()}

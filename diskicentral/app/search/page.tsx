@@ -61,7 +61,7 @@ function SearchPageContent() {
             [
               article.title,
               article.excerpt,
-              article.authorName,
+              article.personName,
               article.categoryName,
             ]
               .filter(Boolean)

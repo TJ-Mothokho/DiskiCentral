@@ -9,10 +9,10 @@ import {
   useState,
 } from "react";
 import { AuthService } from "@/services/AuthService";
-import { AuthorsService } from "@/services/AuthorService";
 import { TokenStorage } from "@/services/TokenStorage";
 import type { AuthResponse, Login, Register } from "@/types/auth";
 import type { User } from "@/types/user";
+import { normalizeRole, Role } from "@/types/roles";
 
 type AuthContextType = {
   user: User | null;
@@ -37,7 +37,6 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 const authService = new AuthService();
-const authorsService = new AuthorsService();
 
 export function useAuth() {
   return useContext(AuthContext);
@@ -65,10 +64,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const response = await authService.getCurrentUser();
         if (!response.data) throw new Error("No authenticated user returned.");
-        const persistedAuthorId = TokenStorage.getUser()?.authorId ?? null;
         const restoredUser = {
           ...response.data,
-          authorId: response.data.authorId ?? persistedAuthorId,
+          role:
+            normalizeRole(response.data.role) ??
+            TokenStorage.getRoleFromToken() ??
+            Role.User,
         };
         TokenStorage.setUser(restoredUser);
         setUser(restoredUser);
@@ -93,22 +94,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Login already returns the authenticated user identity. Store that response
   // without making a second protected request during the login transaction.
   const persistSession = useCallback(async (auth: AuthResponse) => {
-    let authorId = auth.authorId ?? null;
-    if (!authorId) {
-      try {
-        const authorResponse = await authorsService.getAuthorByUserId(auth.userId);
-        authorId = authorResponse.data?.id ?? null;
-      } catch {
-        // A normal user may not have an author profile yet.
-      }
-    }
-
     const authenticatedUser: User = {
       id: auth.userId,
-      authorId,
       name: auth.name,
       email: auth.email,
-      role: auth.role ?? TokenStorage.getRoleFromToken() ?? 3,
+      role:
+        normalizeRole(auth.role) ?? TokenStorage.getRoleFromToken() ?? Role.User,
       active: auth.active ?? true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

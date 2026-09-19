@@ -10,12 +10,10 @@ import { PlayersService } from "@/services/PlayerService";
 import { TeamsService } from "@/services/TeamService";
 import { TransfersService } from "@/services/TransferService";
 import { VideoService } from "@/services/VideoService";
-import { AuthorsService } from "@/services/AuthorService";
 
 const sectionLabels: Record<string, string> = {
   categories: "Categories",
   videos: "Videos",
-  authors: "Authors",
   teams: "Teams",
   players: "Players",
   competitions: "Competitions",
@@ -45,8 +43,6 @@ export default function GenericAdminPage() {
           response = await new CompetitionsService().getApiCompetitions();
         else if (section === "categories")
           response = await new CategoriesService().getApiCategories();
-        else if (section === "authors")
-          response = await new AuthorsService().getApiAuthors();
         else if (section === "players")
           response = await PlayersService.getApiPlayers();
         else if (section === "videos")

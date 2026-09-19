@@ -27,7 +27,7 @@ export default async function PlayerPage({
   const playerArticles = (articlesResponse.data ?? []).filter(
     (article) =>
       article.title.toLowerCase().includes(player.name.toLowerCase()) ||
-      article.authorName?.toLowerCase().includes(player.name.toLowerCase()) ||
+      article.personName?.toLowerCase().includes(player.name.toLowerCase()) ||
       article.categoryName?.toLowerCase().includes("abroad"),
   );
 

@@ -62,13 +62,13 @@ export default async function OpinionPage() {
                 <div className="flex items-center gap-3">
                   <img
                     src={featured.heroImage ?? "/images/default-author.png"}
-                    alt={featured.authorName ?? "Author"}
+                    alt={featured.personName ?? "Author"}
                     className="w-9 h-9 rounded-full object-cover"
                   />
                   <div>
                     <div
                       className={`text-sm font-semibold ${darkMode ? "text-gray-200" : "text-gray-800"}`}>
-                      {featured.authorName ?? "DiskiCentral"}
+                      {featured.personName ?? "DiskiCentral"}
                     </div>
                     <div
                       className={`text-xs flex items-center gap-1 ${darkMode ? "text-gray-500" : "text-gray-400"}`}>
@@ -117,12 +117,12 @@ export default async function OpinionPage() {
                 <div className="flex items-center gap-2">
                   <img
                     src={article.heroImage ?? "/images/default-author.png"}
-                    alt={article.authorName ?? "Author"}
+                    alt={article.personName ?? "Author"}
                     className="w-7 h-7 rounded-full object-cover"
                   />
                   <span
                     className={`text-xs font-medium ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
-                    {article.authorName ?? "DiskiCentral"}
+                    {article.personName ?? "DiskiCentral"}
                   </span>
                 </div>
                 <span

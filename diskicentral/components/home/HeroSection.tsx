@@ -63,7 +63,7 @@ export default function HeroSection({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-gray-300">
                 <span className="font-medium text-white">
-                  {article.authorName ?? "DiskiCentral"}
+                  {article.personName ?? "DiskiCentral"}
                 </span>
 
                 <span>·</span>

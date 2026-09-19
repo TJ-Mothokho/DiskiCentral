@@ -101,11 +101,11 @@ export default function ArticleContent({
             className={`flex flex-wrap items-center gap-4 pb-5 mb-5 border-b ${darkMode ? "border-gray-800" : "border-gray-100"}`}>
             <div
               className={`w-9 h-9 rounded-full bg-[#00C853] text-black flex items-center justify-center font-display font-bold ${darkMode ? "" : ""}`}>
-              {(article.authorName ?? "D").charAt(0).toUpperCase()}
+              {(article.personName ?? "D").charAt(0).toUpperCase()}
             </div>
             <span
               className={`text-sm font-semibold ${darkMode ? "text-gray-200" : "text-gray-800"}`}>
-              {article.authorName ?? "DiskiCentral"}
+              {article.personName ?? "DiskiCentral"}
             </span>
             <div
               className={`flex flex-wrap items-center gap-4 text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
@@ -182,7 +182,7 @@ export default function ArticleContent({
             className={`rounded-lg border p-5 my-6 ${darkMode ? "bg-gray-900 border-gray-800" : "bg-gray-50 border-gray-100"}`}>
             <h2
               className={`font-display font-bold text-base ${darkMode ? "text-white" : "text-gray-900"}`}>
-              {article.authorName ?? "DiskiCentral"}
+              {article.personName ?? "DiskiCentral"}
             </h2>
             <p
               className={`text-xs mt-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>

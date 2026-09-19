@@ -62,15 +62,15 @@ export class VideoService {
     );
   }
 
-  public static async getVideosByAuthorId(
-    authorId: string,
+  public static async getVideosByPersonId(
+    personId: string,
   ): Promise<GetAllVideosResponse> {
     return apiRequest(
       {
         method: "GET",
-        url: `${BASE_URL}/api/Videos/author/${encodeURIComponent(authorId)}`,
+        url: `${BASE_URL}/api/Videos/person/${encodeURIComponent(personId)}`,
       },
-      "Failed to fetch videos by author.",
+      "Failed to fetch videos by person.",
     );
   }
 
