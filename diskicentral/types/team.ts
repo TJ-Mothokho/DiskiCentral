@@ -4,6 +4,7 @@ export type Team = {
   slug: string;
   shortName: string | null;
   abbreviation: string | null;
+  apiId: number | null;
   logo: string | null;
   colour: string | null;
   coach: string | null;
@@ -23,6 +24,7 @@ export type AddTeam = {
   name: string;
   slug: string;
   shortName: string | null;
+  apiId: number | null;
   abbreviation: string | null;
   logo: File | null;
   colour: string | null;
@@ -39,6 +41,7 @@ export type UpdateTeam = {
   name: string | null;
   slug: string | null;
   shortName: string | null;
+  apiId: number | null;
   abbreviation: string | null;
   logo: File | null;
   colour: string | null;

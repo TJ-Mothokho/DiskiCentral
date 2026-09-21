@@ -5,8 +5,6 @@ import { useEffect, useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { TeamsService } from "@/services/TeamService";
 import type { Team } from "@/types/team";
-import { EditTeamModal } from "./EditTeam";
-import { AddTeamModal } from "./AddTeam";
 
 const teamsService = new TeamsService();
 
@@ -15,8 +13,6 @@ export default function AdminTeamsPage() {
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
-  const [editingTeam, setEditingTeam] = useState<Team | null>(null);
-  const [addingTeam, setAddingTeam] = useState(false);
 
   async function loadTeams() {
     setLoading(true);
@@ -51,18 +47,6 @@ export default function AdminTeamsPage() {
     }
   }
 
-  function handleCreated(created: Team) {
-    setTeams((prev) => [...prev, created]);
-    setAddingTeam(false);
-  }
-
-  function handleUpdated(updated: Team) {
-    setTeams((prev) =>
-      prev.map((team) => (team.id === updated.id ? updated : team)),
-    );
-    setEditingTeam(null);
-  }
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
@@ -72,20 +56,11 @@ export default function AdminTeamsPage() {
             {loading ? "Loading teams..." : `${teams.length} records`}
           </p>
         </div>
-        <button
-          type="button"
-          aria-label={`Add team`}
-          onClick={() => setAddingTeam(true)}
+        <Link
+          href="/admin/teams/add"
           className="flex items-center gap-1.5 px-4 py-2 bg-[#00C853] text-black font-bold text-sm rounded-lg hover:bg-[#00A344]">
           <Plus size={14} /> Add Team
-        </button>
-
-        {addingTeam && (
-          <AddTeamModal
-            onClose={() => setAddingTeam(false)}
-            onCreated={handleCreated}
-          />
-        )}
+        </Link>
       </div>
 
       {error && <p className="text-sm text-red-400">{error}</p>}
@@ -122,17 +97,22 @@ export default function AdminTeamsPage() {
                     <div className="h-6 w-6 rounded-full bg-gray-700" />
                   )}
                 </td>
-                <td className="px-4 py-3 text-gray-200">{team.name}</td>
+                <td className="px-4 py-3 text-gray-200">
+                  <Link
+                    href={`/admin/teams/${team.id}/edit`}
+                    className="hover:text-[#00C853]">
+                    {team.name}
+                  </Link>
+                </td>
                 <td className="px-4 py-3 text-xs text-gray-400">{team.slug}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">
-                    <button
-                      type="button"
+                    <Link
+                      href={`/admin/teams/${team.id}/edit`}
                       aria-label={`Edit ${team.name}`}
-                      onClick={() => setEditingTeam(team)}
                       className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800">
                       <Pencil size={14} />
-                    </button>
+                    </Link>
                     <button
                       type="button"
                       aria-label={`Delete ${team.name}`}
@@ -153,14 +133,6 @@ export default function AdminTeamsPage() {
           </p>
         )}
       </div>
-
-      {editingTeam && (
-        <EditTeamModal
-          team={editingTeam}
-          onClose={() => setEditingTeam(null)}
-          onUpdated={handleUpdated}
-        />
-      )}
     </div>
   );
 }
