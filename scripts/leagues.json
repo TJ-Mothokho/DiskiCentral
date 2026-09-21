@@ -1,0 +1,208 @@
+[
+  {
+    "Id": 288,
+    "name": "Premier Soccer League",
+    "country": "South Africa"
+  },
+  {
+    "Id": 289,
+    "name": "Motsepe Foundation Championship",
+    "country": "South Africa"
+  },
+  {
+    "Id": 509,
+    "name": "MTN 8",
+    "country": "South Africa"
+  },
+  {
+    "Id": 507,
+    "name": "Nedbank Cup",
+    "country": "South Africa"
+  },
+  {
+    "Id": 508,
+    "name": "Black Label Cup",
+    "country": "South Africa"
+  },
+  {
+    "Id": 734,
+    "name": "Diski Challenge",
+    "country": "South Africa"
+  },
+  {
+    "Id": 1243,
+    "name": "Super League Women",
+    "country": "South Africa"
+  },
+
+  {
+    "Id": 36,
+    "name": "AFCON - Qualification",
+    "country": "Africa"
+  },
+  {
+    "Id": 6,
+    "name": "AFCON - Group Stage",
+    "country": "Africa"
+  },
+  {
+    "Id": 6,
+    "name": "AFCON - Knockout Stage",
+    "country": "Africa"
+  },
+  {
+    "Id": 922,
+    "name": "AFCON - Women",
+    "country": "Africa"
+  },
+  {
+    "Id": 538,
+    "name": "AFCON - u20",
+    "country": "Africa"
+  },
+
+  {
+    "Id": 12,
+    "name": "CAF Champions League - Group Stage",
+    "country": "Africa"
+  },
+  {
+    "Id": 12,
+    "name": "CAF Champions League - Knockout Stage",
+    "country": "Africa"
+  },
+  {
+    "Id": 20,
+    "name": "CAF Confederation Cup - Group Stage",
+    "country": "Africa"
+  },
+  {
+    "Id": 20,
+    "name": "CAF Confederation Cup - Knockout Stage",
+    "country": "Africa"
+  },
+  {
+    "Id": 533,
+    "name": "CAF Super Cup",
+    "country": "Africa"
+  },
+
+  {
+    "Id": 2,
+    "name": "UEFA Champions League - Group Stage",
+    "country": "Europe"
+  },
+  {
+    "Id": 2,
+    "name": "UEFA Champions League - Knockout Stage",
+    "country": "Europe"
+  },
+  {
+    "Id": 525,
+    "name": "UEFA Champions League Women - Group Stage",
+    "country": "Europe"
+  },
+  {
+    "Id": 525,
+    "name": "UEFA Champions League Women - Knockout Stage",
+    "country": "Europe"
+  },
+  {
+    "Id": 3,
+    "name": "UEFA Europa League - Group Stage",
+    "country": "Europe"
+  },
+  {
+    "Id": 3,
+    "name": "UEFA Europa League - Knockout Stage",
+    "country": "Europe"
+  },
+  {
+    "Id": 848,
+    "name": "UEFA Europa Conference League - Group Stage",
+    "country": "Europe"
+  },
+  {
+    "Id": 848,
+    "name": "UEFA Europa Conference League - Knockout Stage",
+    "country": "Europe"
+  },
+  {
+    "Id": 531,
+    "name": "UEFA Super Cup",
+    "country": "Europe"
+  },
+
+  {
+    "Id": 5,
+    "name": "UEFA Nations League",
+    "country": "Europe"
+  },
+
+  {
+    "Id": 4,
+    "name": "Euro Championship - Group Stage",
+    "country": "Europe"
+  },
+  {
+    "Id": 4,
+    "name": "Euro Championship - Knockout Stage",
+    "country": "Europe"
+  },
+  {
+    "Id": 1,
+    "name": "FIFA World Cup - Group Stage",
+    "country": "World"
+  },
+  {
+    "Id": 1,
+    "name": "FIFA World Cup - Knockout Stage",
+    "country": "World"
+  },
+  {
+    "Id": 8,
+    "name": "FIFA World Cup Women - Group Stage",
+    "country": "World"
+  },
+  {
+    "Id": 8,
+    "name": "FIFA World Cup Women - Knockout Stage",
+    "country": "World"
+  },
+  {
+    "Id": 15,
+    "name": "FIFA Club World Cup - Group Stage",
+    "country": "World"
+  },
+  {
+    "Id": 15,
+    "name": "FIFA Club World Cup - Knockout Stage",
+    "country": "World"
+  },
+
+  {
+    "Id": 39,
+    "name": "Premier League",
+    "country": "England"
+  },
+  {
+    "Id": 140,
+    "name": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "Id": 135,
+    "name": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "Id": 78,
+    "name": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "Id": 61,
+    "name": "Ligue 1",
+    "country": "France"
+  }
+]
