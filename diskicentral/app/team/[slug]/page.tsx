@@ -6,6 +6,7 @@ import { FixturesService } from "@/services/FixtureService";
 import { PlayersService } from "@/services/PlayerService";
 import { ResultsService } from "@/services/ResultService";
 import { StandingsService } from "@/services/StandingService";
+import { TagsService } from "@/services/TagService";
 import { TeamsService } from "@/services/TeamService";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +15,7 @@ export default async function TeamPage({ params }: PageProps<"/team/[slug]">) {
   const { slug } = await params;
   const teamsService = new TeamsService();
   const standingsService = new StandingsService();
+  const tagsService = new TagsService();
 
   const teamResponse = await teamsService.getTeamBySlug(slug);
   if (!teamResponse.data) {
@@ -21,13 +23,19 @@ export default async function TeamPage({ params }: PageProps<"/team/[slug]">) {
   }
   const team = teamResponse.data;
 
-  const [articlesResponse, fixturesResponse, resultsResponse, playersResponse] =
-    await Promise.all([
-      ArticlesService.getApiArticles(),
-      FixturesService.getFixturesByTeamId(team.id),
-      ResultsService.getApiResults(),
-      PlayersService.getPlayersByTeamId(team.id),
-    ]);
+  const [
+    articlesResponse,
+    fixturesResponse,
+    resultsResponse,
+    playersResponse,
+    tagsResponse,
+  ] = await Promise.all([
+    ArticlesService.getApiArticles(),
+    FixturesService.getFixturesByTeamId(team.id),
+    ResultsService.getApiResults(),
+    PlayersService.getPlayersByTeamId(team.id),
+    tagsService.getApiTags(),
+  ]);
 
   const fixtures = fixturesResponse.data ?? [];
   const fixtureIds = new Set(fixtures.map((fixture) => fixture.id));
@@ -36,8 +44,15 @@ export default async function TeamPage({ params }: PageProps<"/team/[slug]">) {
   );
   const fixtureById = new Map(fixtures.map((fixture) => [fixture.id, fixture]));
 
+  const matchingTag = (tagsResponse.data ?? []).find(
+    (tag) => tag.slug === team.slug,
+  );
   const articles = (articlesResponse.data ?? [])
-    .filter((article) => article.teamId === team.id)
+    .filter(
+      (article) =>
+        article.teamId === team.id ||
+        (matchingTag && article.tagIds.includes(matchingTag.id)),
+    )
     .slice(0, 6);
 
   const standingsByCompetition = Object.fromEntries(

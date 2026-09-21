@@ -6,6 +6,7 @@ import { CompetitionsService } from "@/services/CompetitionService";
 import { FixturesService } from "@/services/FixtureService";
 import { ResultsService } from "@/services/ResultService";
 import { StandingsService } from "@/services/StandingService";
+import { TagsService } from "@/services/TagService";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ export default async function LeaguePage({
   const { slug } = await params;
   const competitionsService = new CompetitionsService();
   const standingsService = new StandingsService();
+  const tagsService = new TagsService();
   const competitionResponse =
     await competitionsService.getCompetitionBySlug(slug);
 
@@ -28,11 +30,13 @@ export default async function LeaguePage({
     fixturesResponse,
     resultsResponse,
     standingsResponse,
+    tagsResponse,
   ] = await Promise.all([
     ArticlesService.getApiArticles(),
     FixturesService.getFixturesByCompetitionId(competition.id),
     ResultsService.getApiResults(),
     standingsService.getStandingsByCompetitionId(competition.id),
+    tagsService.getApiTags(),
   ]);
 
   const fixtures = fixturesResponse.data ?? [];
@@ -41,17 +45,11 @@ export default async function LeaguePage({
     fixtureIds.has(result.fixtureId),
   );
   const fixtureById = new Map(fixtures.map((fixture) => [fixture.id, fixture]));
-  const searchTerms = [competition.name, competition.shortName]
-    .filter(Boolean)
-    .map((term) => term!.toLowerCase());
+  const matchingTag = (tagsResponse.data ?? []).find(
+    (tag) => tag.slug === competition.slug,
+  );
   const articles = (articlesResponse.data ?? [])
-    .filter((article) =>
-      searchTerms.some((term) =>
-        [article.title, article.categoryName]
-          .filter(Boolean)
-          .some((value) => String(value).toLowerCase().includes(term)),
-      ),
-    )
+    .filter((article) => matchingTag && article.tagIds.includes(matchingTag.id))
     .slice(0, 6);
 
   return (

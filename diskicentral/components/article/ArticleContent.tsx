@@ -7,21 +7,26 @@ import { FormEvent, useState } from "react";
 import CategoryBadge from "@/components/CategoryBadge";
 import { useTheme } from "@/themes/ThemeContext";
 import { Article } from "@/types/article";
+import { Tag } from "@/types/tag";
 import { MarkdownBody } from "@/components/article/MarkdownEditor";
 import ArticleCard from "./ArticleCard";
 
 interface ArticleContentProps {
   article: Article;
   articles: Article[];
+  tags: Tag[];
 }
 
 export default function ArticleContent({
   article,
   articles,
+  tags,
 }: ArticleContentProps) {
   const { darkMode } = useTheme();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+
+  const tagById = new Map(tags.map((tag) => [tag.id, tag]));
 
   const relatedArticles = articles
     .filter((candidate) => article.relatedArticleIds.includes(candidate.id))
@@ -58,9 +63,9 @@ export default function ArticleContent({
   }
 
   return (
-    <main className="max-w-[1440px] mx-auto px-4 py-6">
-      <div className="flex flex-col lg:flex-row gap-8">
-        <article className="flex-1 min-w-0 max-w-3xl">
+    <main className="max-w-6xl mx-auto px-4 py-6">
+      <div className="flex flex-col lg:flex-row gap-8 justify-center">
+        <article className="flex-1 min-w-0 lg:max-w-3xl">
           <nav
             className={`flex items-center gap-2 text-xs mb-5 ${darkMode ? "text-gray-400" : "text-gray-500"}`}
             aria-label="Breadcrumb">
@@ -80,7 +85,7 @@ export default function ArticleContent({
           <div className="flex items-center gap-2 mb-4">
             <CategoryBadge category={article.categoryName ?? "News"} />
             {article.trending && (
-              <span className="bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
+              <span className="bg-[#00C853] text-black text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
                 Trending
               </span>
             )}
@@ -157,7 +162,8 @@ export default function ArticleContent({
 
           <MarkdownBody
             markdown={article.body}
-            className={`prose prose-base max-w-none mb-8 leading-relaxed ${darkMode ? "prose-invert text-gray-200" : "text-gray-800"}`}
+            darkMode={darkMode}
+            className="max-w-none mb-8"
           />
 
           {article.tagIds.length > 0 && (
@@ -167,14 +173,17 @@ export default function ArticleContent({
                 className={`text-xs font-semibold uppercase tracking-wide ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
                 Tags:
               </span>
-              {article.tagIds.map((tagId) => (
-                <Link
-                  key={tagId}
-                  href={`/search?q=${encodeURIComponent(tagId)}`}
-                  className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors hover:bg-[#00C853] hover:text-black ${darkMode ? "bg-gray-800 text-gray-300" : "bg-gray-100 text-gray-600"}`}>
-                  {tagId}
-                </Link>
-              ))}
+              {article.tagIds.map((tagId) => {
+                const tag = tagById.get(tagId);
+                return (
+                  <Link
+                    key={tagId}
+                    href={`/search?q=${encodeURIComponent(tag?.slug ?? tagId)}`}
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors hover:bg-[#00C853] hover:text-black ${darkMode ? "bg-gray-800 text-gray-300" : "bg-gray-100 text-gray-600"}`}>
+                    {tag?.name ?? "Unknown tag"}
+                  </Link>
+                );
+              })}
             </div>
           )}
 
@@ -259,7 +268,7 @@ export default function ArticleContent({
           )}
         </article>
 
-        <aside className="w-full lg:w-72 shrink-0 space-y-5">
+        <aside className="w-full lg:w-80 shrink-0 space-y-5">
           <div
             className={`rounded-lg border-2 border-dashed flex items-center justify-center h-48 text-xs ${darkMode ? "border-gray-700 text-gray-600" : "border-gray-200 text-gray-400"}`}>
             Advertisement 300 x 250
@@ -280,6 +289,17 @@ export default function ArticleContent({
                 />
               ))}
             </div>
+          </section>
+          <section
+            className={`rounded-lg border p-4 ${darkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-100"}`}>
+            <h2
+              className={`font-display font-bold text-sm uppercase tracking-wide mb-3 ${darkMode ? "text-white" : "text-gray-900"}`}>
+              League Table
+            </h2>
+            <p
+              className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-400"}`}>
+              Standings and recent results coming soon.
+            </p>
           </section>
         </aside>
       </div>

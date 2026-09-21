@@ -6,7 +6,6 @@ import { Clock, Eye } from "lucide-react";
 import { Article } from "@/types/article";
 import CategoryBadge from "@/components/CategoryBadge";
 
-
 interface ArticleCardProps {
   article: Article;
   variant?: "default" | "horizontal" | "compact" | "featured";
@@ -48,7 +47,7 @@ export default function ArticleCard({
             <CategoryBadge category={category} />
 
             {article.trending && (
-              <span className="text-xs font-semibold text-orange-500 uppercase tracking-wide">
+              <span className="bg-[#00C853] text-black text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
                 Trending
               </span>
             )}
@@ -89,7 +88,9 @@ export default function ArticleCard({
           <CategoryBadge category={category} small />
 
           {article.trending && (
-            <span className="text-xs font-semibold text-orange-500">🔥</span>
+            <span className="bg-[#00C853] text-black text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
+              Trending
+            </span>
           )}
         </div>
 
@@ -131,7 +132,7 @@ export default function ArticleCard({
 
         {article.trending && (
           <div className="absolute top-3 left-3">
-            <span className="bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
+            <span className="bg-[#00C853] text-black text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
               Trending
             </span>
           </div>

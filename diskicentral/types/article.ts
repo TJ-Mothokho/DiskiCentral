@@ -47,7 +47,6 @@ export type AddArticle = {
   subtitle: string | null;
   excerpt: string | null;
   body: string;
-  personId: string;
   categoryId: string;
   teamId: string | null;
   tagIds: string[];
@@ -64,7 +63,6 @@ export type UpdateArticle = {
   excerpt: string | null;
   body: string | null;
   categoryId: string | null;
-  personId: string | null;
   teamId: string | null;
   tagIds: string[];
   heroImage: File | null;
