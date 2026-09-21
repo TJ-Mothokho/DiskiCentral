@@ -4,19 +4,50 @@ import { usePathname, useRouter } from "next/navigation";
 import { Search, Moon, Sun, Menu, X, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { CompetitionsService } from "@/services/CompetitionService";
+import { Competition } from "@/types/competition";
+
+const TOP_5_COUNTRIES = ["England", "Italy", "Germany", "France", "Spain"];
+const TOP_5_LABEL = "Top 5 Leagues";
+const SOUTH_AFRICA = "South Africa";
+const AFRICA = "Africa";
+const EUROPE = "Europe";
+const WORLD = "World";
+
+type LeagueGroup = { country: string; competitions: Competition[] };
+
+// Region bucket order: South Africa, Africa, Top 5 Leagues, Europe, World
+const GROUP_ORDER = [SOUTH_AFRICA, AFRICA, TOP_5_LABEL, EUROPE, WORLD];
+
+function getGroupOrder(country: string): number {
+  const index = GROUP_ORDER.indexOf(country);
+  return index === -1 ? GROUP_ORDER.length : index;
+}
+
+function groupCompetitionsByCountry(
+  competitions: Competition[],
+): LeagueGroup[] {
+  const groups = new Map<string, Competition[]>();
+  for (const competition of competitions) {
+    const key = TOP_5_COUNTRIES.includes(competition.country)
+      ? TOP_5_LABEL
+      : competition.country;
+    const existing = groups.get(key);
+    if (existing) {
+      existing.push(competition);
+    } else {
+      groups.set(key, [competition]);
+    }
+  }
+  return Array.from(groups.entries())
+    .sort(([a], [b]) => getGroupOrder(a) - getGroupOrder(b))
+    .map(([country, comps]) => ({ country, competitions: comps }));
+}
 
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "News", href: "/news" },
-  {
-    label: "PSL",
-    href: "/competitions/psl",
-    submenu: [
-      { label: "Latest PSL News", href: "/competitions/psl" },
-      { label: "Standings", href: "/competitions/psl#standings" },
-      { label: "Fixtures", href: "/competitions/psl#fixtures" },
-    ],
-  },
+  { label: "Leagues", href: "/competitions/psl" },
   {
     label: "CAF",
     href: "/competitions/caf-champions-league",
@@ -48,6 +79,8 @@ export default function Navbar({
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [leagueGroups, setLeagueGroups] = useState<LeagueGroup[]>([]);
+  const [openCountry, setOpenCountry] = useState<string | null>(null);
   const pathname = usePathname();
   const router = useRouter();
   const { user, isLoading, logout } = useAuth();
@@ -59,9 +92,27 @@ export default function Navbar({
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    new CompetitionsService()
+      .getApiCompetitions()
+      .then((res) => {
+        if (!cancelled && res.success) {
+          setLeagueGroups(groupCompetitionsByCountry(res.data));
+        }
+      })
+      .catch(() => {
+        // ignore, nav falls back to no submenu
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileOpen(false);
     setOpenSubmenu(null);
+    setOpenCountry(null);
   }, [pathname]);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -113,7 +164,49 @@ export default function Navbar({
           {/* Desktop nav */}
           <nav className="hidden lg:flex items-center gap-1 flex-1">
             {navLinks.map((link) =>
-              link.submenu ? (
+              link.label === "Leagues" ? (
+                <div
+                  key={link.label}
+                  className="relative group"
+                  onMouseEnter={() => setOpenSubmenu(link.label)}
+                  onMouseLeave={() => setOpenSubmenu(null)}>
+                  <Link
+                    href={link.href}
+                    className={`flex items-center gap-1 px-3 py-2 text-sm font-medium rounded transition-colors ${
+                      pathname.startsWith("/league")
+                        ? "text-green"
+                        : darkMode
+                          ? "text-gray-300 hover:text-white"
+                          : "text-gray-700 hover:text-gray-900"
+                    }`}>
+                    {link.label}
+                    <ChevronDown size={14} />
+                  </Link>
+                  {openSubmenu === link.label && leagueGroups.length > 0 && (
+                    <div
+                      className={`absolute top-full left-0 mt-0 w-160 max-h-112 overflow-y-auto rounded-lg shadow-xl border p-4 z-50 grid grid-cols-3 gap-x-6 gap-y-4 ${darkMode ? "bg-charcoal border-gray-700" : "bg-white border-gray-100"}`}>
+                      {leagueGroups.map((group) => (
+                        <div key={group.country}>
+                          <span
+                            className={`block mb-1.5 text-xs font-semibold uppercase tracking-wide ${darkMode ? "text-gray-500" : "text-gray-400"}`}>
+                            {group.country}
+                          </span>
+                          <div className="space-y-0.5">
+                            {group.competitions.map((competition) => (
+                              <Link
+                                key={competition.id}
+                                href={`/league/${competition.slug}`}
+                                className={`block px-2 py-1.5 text-sm rounded transition-colors ${darkMode ? "text-gray-300 hover:text-white hover:bg-gray-800" : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"}`}>
+                                {competition.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : link.submenu ? (
                 <div
                   key={link.label}
                   className="relative group"
@@ -257,6 +350,42 @@ export default function Navbar({
                         className={`block px-3 py-2 text-sm rounded transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-500 hover:text-gray-900"}`}>
                         {sub.label}
                       </Link>
+                    ))}
+                  </div>
+                )}
+                {link.label === "Leagues" && leagueGroups.length > 0 && (
+                  <div className="ml-4 mt-1 space-y-1">
+                    {leagueGroups.map((group) => (
+                      <div key={group.country}>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setOpenCountry(
+                              openCountry === group.country
+                                ? null
+                                : group.country,
+                            )
+                          }
+                          className={`flex items-center justify-between w-full px-3 py-2 text-xs font-semibold uppercase tracking-wide rounded transition-colors ${darkMode ? "text-gray-400 hover:text-white hover:bg-gray-800" : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"}`}>
+                          {group.country}
+                          <ChevronDown
+                            size={14}
+                            className={`transition-transform ${openCountry === group.country ? "rotate-180" : ""}`}
+                          />
+                        </button>
+                        {openCountry === group.country && (
+                          <div className="ml-3 space-y-1">
+                            {group.competitions.map((competition) => (
+                              <Link
+                                key={competition.id}
+                                href={`/league/${competition.slug}`}
+                                className={`block px-3 py-2 text-sm rounded transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-500 hover:text-gray-900"}`}>
+                                {competition.name}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
                 )}
