@@ -1,10 +1,9 @@
 import MatchCard from "@/components/match/MatchCard";
 import { Fixture } from "@/types/fixture";
-import { Result } from "@/types/result";
 
 interface MatchCentreSectionProps {
   fixtures: Fixture[];
-  results: Result[];
+  results: Fixture[];
   darkMode: boolean;
 }
 
@@ -13,7 +12,6 @@ export default function MatchCentreSection({
   results,
   darkMode,
 }: MatchCentreSectionProps) {
-  const fixtureById = new Map(fixtures.map((fixture) => [fixture.id, fixture]));
   const upcomingMatches = fixtures.map((fixture) => ({
     id: fixture.id,
     competition: fixture.competitionName ?? "Football",
@@ -27,24 +25,17 @@ export default function MatchCentreSection({
     venue: fixture.venue ?? undefined,
     status: "upcoming",
   }));
-  const resultMatches = results.flatMap((result) => {
-    const fixture = fixtureById.get(result.fixtureId);
-    if (!fixture) return [];
-
-    return [
-      {
-        id: result.id,
-        competition: fixture.competitionName ?? "Football",
-        homeTeam: fixture.homeTeamName ?? "Home team",
-        awayTeam: fixture.awayTeamName ?? "Away team",
-        date: fixture.kickoff,
-        venue: fixture.venue ?? undefined,
-        homeScore: result.homeScore,
-        awayScore: result.awayScore,
-        status: "completed",
-      },
-    ];
-  });
+  const resultMatches = results.map((result) => ({
+    id: result.id,
+    competition: result.competitionName ?? "Football",
+    homeTeam: result.homeTeamName ?? "Home team",
+    awayTeam: result.awayTeamName ?? "Away team",
+    date: result.kickoff,
+    venue: result.venue ?? undefined,
+    homeScore: result.homeScore ?? undefined,
+    awayScore: result.awayScore ?? undefined,
+    status: "completed",
+  }));
 
   return (
     <section

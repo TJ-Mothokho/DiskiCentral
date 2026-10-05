@@ -2,7 +2,6 @@ import HomeContent from "@/components/home/HomeContent";
 import { ArticlesService } from "@/services/ArticleService";
 import { FixturesService } from "@/services/FixtureService";
 import { PlayersService } from "@/services/PlayerService";
-import { ResultsService } from "@/services/ResultService";
 import { TransfersService } from "@/services/TransferService";
 import { VideoService } from "@/services/VideoService";
 
@@ -12,9 +11,9 @@ export default async function HomePage() {
   const [articles, fixtures, players, results, transfers, videos] =
     await Promise.all([
       ArticlesService.getApiArticles(),
-      FixturesService.getApiFixtures(),
+      FixturesService.getUpcomingFixtures(),
       PlayersService.getApiPlayers(),
-      ResultsService.getApiResults(),
+      FixturesService.getFinishedFixtures(),
       TransfersService.getApiTransfers(),
       VideoService.getApiVideos(),
     ]);

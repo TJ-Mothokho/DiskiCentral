@@ -1,7 +1,6 @@
 import { Article } from "@/types/article";
 import { Fixture } from "@/types/fixture";
 import { Player } from "@/types/player";
-import { Result } from "@/types/result";
 import { Transfer } from "@/types/transfer";
 import { Video } from "@/types/video";
 
@@ -19,7 +18,7 @@ interface HomeContentProps {
   articles: Article[];
   fixtures: Fixture[];
   players: Player[];
-  results: Result[];
+  results: Fixture[];
   transfers: Transfer[];
   videos: Video[];
 }
@@ -51,8 +50,13 @@ export default function HomeContent({
     .filter((article) => article.categoryName === "Opinion")
     .slice(0, 2);
 
-  const upcomingFixtures = fixtures.slice(0, 3);
-  const recentResults = results.slice(0, 3);
+  const kickoff = (fixture: Fixture) => new Date(fixture.kickoff).getTime();
+  const upcomingFixtures = [...fixtures]
+    .sort((a, b) => kickoff(a) - kickoff(b))
+    .slice(0, 3);
+  const recentResults = [...results]
+    .sort((a, b) => kickoff(b) - kickoff(a))
+    .slice(0, 3);
 
   const featuredVideo = videos[0];
   const latestVideos = videos.slice(1, 4);

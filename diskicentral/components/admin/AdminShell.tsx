@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { type ComponentType, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type ComponentType,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useAuth } from "@/context/AuthContext";
 import { canManageUsers } from "@/types/roles";
 import {
@@ -14,7 +20,6 @@ import {
   CalendarClock,
   ChevronDown,
   ChevronRight,
-  ClipboardList,
   Database,
   FileText,
   Globe,
@@ -78,8 +83,11 @@ const sidebarSections: SidebarSection[] = [
   {
     title: "Matches",
     items: [
-      { label: "Fixtures", href: "/admin/fixtures", icon: CalendarClock },
-      { label: "Results", href: "/admin/results", icon: ClipboardList },
+      {
+        label: "Fixtures & Results",
+        href: "/admin/fixtures",
+        icon: CalendarClock,
+      },
       { label: "Standings", href: "/admin/standings", icon: ListOrdered },
     ],
   },
