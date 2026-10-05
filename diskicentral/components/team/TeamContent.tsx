@@ -298,15 +298,13 @@ export default function TeamContent({
             <thead
               className={`${darkMode ? "bg-gray-800 text-gray-300" : "bg-gray-50 text-gray-600"}`}>
               <tr>
-                {["#", "P", "W", "D", "L", "GD", "Pts"].map(
-                  (heading) => (
-                    <th
-                      key={heading}
-                      className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide">
-                      {heading}
-                    </th>
-                  ),
-                )}
+                {["#", "P", "W", "D", "L", "GD", "Pts"].map((heading) => (
+                  <th
+                    key={heading}
+                    className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide">
+                    {heading}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>

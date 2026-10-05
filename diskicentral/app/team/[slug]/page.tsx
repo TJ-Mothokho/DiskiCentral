@@ -23,17 +23,13 @@ export default async function TeamPage({ params }: PageProps<"/team/[slug]">) {
   }
   const team = teamResponse.data;
 
-  const [
-    articlesResponse,
-    fixturesResponse,
-    playersResponse,
-    tagsResponse,
-  ] = await Promise.all([
-    ArticlesService.getApiArticles(),
-    FixturesService.getFixturesByTeamId(team.id),
-    PlayersService.getPlayersByTeamId(team.id),
-    tagsService.getApiTags(),
-  ]);
+  const [articlesResponse, fixturesResponse, playersResponse, tagsResponse] =
+    await Promise.all([
+      ArticlesService.getApiArticles(),
+      FixturesService.getFixturesByTeamId(team.id),
+      PlayersService.getPlayersByTeamId(team.id),
+      tagsService.getApiTags(),
+    ]);
 
   const allFixtures = fixturesResponse.data ?? [];
   const fixtures = allFixtures.filter(
