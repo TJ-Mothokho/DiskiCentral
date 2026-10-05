@@ -49,6 +49,7 @@ export type UpdateTeam = {
   slug: string | null;
   shortName: string | null;
   apiId: number | null;
+  fotmobLink: string | null;
   abbreviation: string | null;
   logo: File | null;
   primarycolour: string | null;

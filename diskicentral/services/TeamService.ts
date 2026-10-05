@@ -21,12 +21,16 @@ export class TeamsService {
     formData.append("Name", team.name);
     formData.append("Slug", team.slug);
     if (team.apiId !== null) formData.append("ApiId", String(team.apiId));
+    if (team.fotmobLink) formData.append("FotmobLink", team.fotmobLink);
     if (team.shortName) formData.append("ShortName", team.shortName);
     if (team.abbreviation) formData.append("Abbreviation", team.abbreviation);
     if (team.logo) formData.append("Logo", team.logo);
-    if (team.primarycolour) formData.append("Colour", team.primarycolour);
-    if (team.secondarycolour) formData.append("SecondaryColour", team.secondarycolour);
-    if (team.tertiarycolour) formData.append("TertiaryColour", team.tertiarycolour);
+    if (team.primarycolour)
+      formData.append("PrimaryColour", team.primarycolour);
+    if (team.secondarycolour)
+      formData.append("SecondaryColour", team.secondarycolour);
+    if (team.tertiarycolour)
+      formData.append("TertiaryColour", team.tertiarycolour);
     if (team.coach) formData.append("Coach", team.coach);
     if (team.stadium) formData.append("Stadium", team.stadium);
     if (team.city) formData.append("City", team.city);
@@ -61,12 +65,16 @@ export class TeamsService {
     if (team.slug) formData.append("Slug", team.slug);
     if (team.apiId !== null && team.apiId !== undefined)
       formData.append("ApiId", String(team.apiId));
+    if (team.fotmobLink) formData.append("FotmobLink", team.fotmobLink);
     if (team.shortName) formData.append("ShortName", team.shortName);
     if (team.abbreviation) formData.append("Abbreviation", team.abbreviation);
     if (team.logo) formData.append("Logo", team.logo);
-    if (team.primarycolour) formData.append("Colour", team.primarycolour);
-    if (team.secondarycolour) formData.append("SecondaryColour", team.secondarycolour);
-    if (team.tertiarycolour) formData.append("TertiaryColour", team.tertiarycolour);
+    if (team.primarycolour)
+      formData.append("PrimaryColour", team.primarycolour);
+    if (team.secondarycolour)
+      formData.append("SecondaryColour", team.secondarycolour);
+    if (team.tertiarycolour)
+      formData.append("TertiaryColour", team.tertiarycolour);
     if (team.coach) formData.append("Coach", team.coach);
     if (team.stadium) formData.append("Stadium", team.stadium);
     if (team.city) formData.append("City", team.city);
