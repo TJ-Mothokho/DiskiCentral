@@ -1,22 +1,18 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 
 import ArticleCard from "@/components/article/ArticleCard";
 import MatchCard from "@/components/match/MatchCard";
 import type { Article } from "@/types/article";
-import type { Competition } from "@/types/competition";
-import type { Fixture } from "@/types/fixture";
-import type { Result } from "@/types/result";
+import { type Competition, CompetitionFormat } from "@/types/competition";
+import { type Fixture, FixtureStatus } from "@/types/fixture";
 import type { Standing } from "@/types/standing";
 
 interface CompetitionContentProps {
   competition: Competition;
   articles: Article[];
   fixtures: Fixture[];
-  results: Result[];
-  fixtureById: Map<string, Fixture>;
   standings: Standing[];
 }
 
@@ -25,9 +21,7 @@ type Tab = "overview" | "news" | "fixtures" | "results" | "standings";
 export default function CompetitionContent({
   competition,
   articles,
-  fixtures,
-  results,
-  fixtureById,
+  fixtures: allFixtures,
   standings,
 }: CompetitionContentProps) {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
@@ -35,6 +29,19 @@ export default function CompetitionContent({
   const tabs: Tab[] = ["overview", "news", "fixtures", "results", "standings"];
   const panelClass = `rounded-xl border p-5 ${darkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-100"}`;
   const headingClass = `font-display font-bold ${darkMode ? "text-white" : "text-gray-900"}`;
+
+  const byKickoff = (a: Fixture, b: Fixture) =>
+    new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime();
+  const fixtures = allFixtures
+    .filter(
+      (fixture) =>
+        fixture.status !== FixtureStatus.Finished &&
+        fixture.status !== FixtureStatus.Cancelled,
+    )
+    .sort(byKickoff);
+  const results = allFixtures
+    .filter((fixture) => fixture.status === FixtureStatus.Finished)
+    .sort((a, b) => byKickoff(b, a));
 
   const fixtureMatches = fixtures.map((fixture) => ({
     id: fixture.id,
@@ -51,20 +58,17 @@ export default function CompetitionContent({
     status: "scheduled" as const,
   }));
 
-  const resultMatches = results.map((result) => {
-    const fixture = fixtureById.get(result.fixtureId);
-    return {
-      id: result.id,
-      competition: fixture?.competitionName ?? competition.name,
-      homeTeam: fixture?.homeTeamName ?? "Home",
-      awayTeam: fixture?.awayTeamName ?? "Away",
-      date: fixture?.kickoff ?? result.createdAt,
-      venue: fixture?.venue ?? undefined,
-      homeScore: result.homeScore,
-      awayScore: result.awayScore,
-      status: "completed" as const,
-    };
-  });
+  const resultMatches = results.map((result) => ({
+    id: result.id,
+    competition: result.competitionName ?? competition.name,
+    homeTeam: result.homeTeamName ?? "Home",
+    awayTeam: result.awayTeamName ?? "Away",
+    date: result.kickoff,
+    venue: result.venue ?? undefined,
+    homeScore: result.homeScore ?? undefined,
+    awayScore: result.awayScore ?? undefined,
+    status: "completed" as const,
+  }));
 
   return (
     <main className="max-w-[1440px] mx-auto px-4 py-6">
@@ -73,7 +77,7 @@ export default function CompetitionContent({
           <div
             className="w-20 h-20 rounded-xl overflow-hidden bg-gray-200 shrink-0"
             style={{
-              borderBottom: `4px solid ${competition.colour ?? "#00C853"}`,
+              borderBottom: `4px solid ${competition.primarycolour ?? "#00C853"}`,
             }}>
             {competition.logo && (
               <img
@@ -98,7 +102,10 @@ export default function CompetitionContent({
               </span>
               <span
                 className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
-                Format {competition.format}
+                Format{" "}
+                {competition.format === CompetitionFormat.Knockout
+                  ? "Knockout"
+                  : "League"}
               </span>
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">
                 <span className="w-1.5 h-1.5 rounded-full bg-current" /> Active
@@ -244,7 +251,7 @@ export default function CompetitionContent({
             <thead
               className={`${darkMode ? "bg-gray-800 text-gray-300" : "bg-gray-50 text-gray-600"}`}>
               <tr>
-                {["#", "Team", "P", "W", "D", "L", "GD", "Pts"].map(
+                {["#", "P", "W", "D", "L", "GF", "GA", "GD", "Pts"].map(
                   (heading) => (
                     <th
                       key={heading}
@@ -263,17 +270,12 @@ export default function CompetitionContent({
                   <td className="px-4 py-3 font-semibold text-[#00C853]">
                     {row.position}
                   </td>
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/team/${row.teamName?.toLowerCase().replace(/\s+/g, "-")}`}
-                      className={`${headingClass} hover:text-[#00C853]`}>
-                      {row.teamName ?? "Unknown team"}
-                    </Link>
-                  </td>
                   <td className="text-center px-3 py-3">{row.played}</td>
                   <td className="text-center px-3 py-3">{row.wins}</td>
                   <td className="text-center px-3 py-3">{row.draws}</td>
                   <td className="text-center px-3 py-3">{row.losses}</td>
+                  <td className="text-center px-3 py-3">{row.goalsFor}</td>
+                  <td className="text-center px-3 py-3">{row.goalsAgainst}</td>
                   <td className="text-center px-3 py-3">
                     {row.goalDifference > 0
                       ? `+${row.goalDifference}`

@@ -4,7 +4,6 @@ import CompetitionContent from "@/components/competition/CompetitionContent";
 import { ArticlesService } from "@/services/ArticleService";
 import { CompetitionsService } from "@/services/CompetitionService";
 import { FixturesService } from "@/services/FixtureService";
-import { ResultsService } from "@/services/ResultService";
 import { StandingsService } from "@/services/StandingService";
 import { TagsService } from "@/services/TagService";
 
@@ -25,26 +24,15 @@ export default async function LeaguePage({
   }
 
   const competition = competitionResponse.data;
-  const [
-    articlesResponse,
-    fixturesResponse,
-    resultsResponse,
-    standingsResponse,
-    tagsResponse,
-  ] = await Promise.all([
-    ArticlesService.getApiArticles(),
-    FixturesService.getFixturesByCompetitionId(competition.id),
-    ResultsService.getApiResults(),
-    standingsService.getStandingsByCompetitionId(competition.id),
-    tagsService.getApiTags(),
-  ]);
+  const [articlesResponse, fixturesResponse, standingsResponse, tagsResponse] =
+    await Promise.all([
+      ArticlesService.getApiArticles(),
+      FixturesService.getFixturesByCompetitionId(competition.id),
+      standingsService.getStandingsByCompetitionId(competition.id),
+      tagsService.getApiTags(),
+    ]);
 
   const fixtures = fixturesResponse.data ?? [];
-  const fixtureIds = new Set(fixtures.map((fixture) => fixture.id));
-  const results = (resultsResponse.data ?? []).filter((result) =>
-    fixtureIds.has(result.fixtureId),
-  );
-  const fixtureById = new Map(fixtures.map((fixture) => [fixture.id, fixture]));
   const matchingTag = (tagsResponse.data ?? []).find(
     (tag) => tag.slug === competition.slug,
   );
@@ -57,8 +45,6 @@ export default async function LeaguePage({
       competition={competition}
       articles={articles}
       fixtures={fixtures}
-      results={results}
-      fixtureById={fixtureById}
       standings={standingsResponse.data ?? []}
     />
   );
