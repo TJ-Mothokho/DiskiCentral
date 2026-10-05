@@ -22,7 +22,7 @@ function articleFormData(article: AddArticle | UpdateArticle) {
   append("Body", article.body);
   append("CategoryId", article.categoryId);
   append("TeamId", article.teamId);
-  article.tagIds.forEach((tagId) => formData.append("TagIds", tagId));
+  if(article.tagIds) article.tagIds.forEach((tagId) => formData.append("TagIds", tagId));
   append("Featured", article.featured);
   append("Trending", article.trending);
   if ("status" in article) append("Status", article.status);

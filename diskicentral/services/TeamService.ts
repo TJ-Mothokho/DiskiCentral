@@ -1,12 +1,12 @@
 import {
   AddTeam,
-  BulkCompetitionLink,
   GetAllTeamsResponse,
   GetTeamResponse,
   UpdateTeam,
 } from "@/types/team";
 import { BooleanResponse } from "@/types/common";
 import { apiRequest, BASE_URL } from "@/services/ApiRequest";
+import { BulkCompetitionLink } from "@/types/competition";
 
 export class TeamsService {
   public async getApiTeams(): Promise<GetAllTeamsResponse> {
@@ -24,7 +24,9 @@ export class TeamsService {
     if (team.shortName) formData.append("ShortName", team.shortName);
     if (team.abbreviation) formData.append("Abbreviation", team.abbreviation);
     if (team.logo) formData.append("Logo", team.logo);
-    if (team.colour) formData.append("Colour", team.colour);
+    if (team.primarycolour) formData.append("Colour", team.primarycolour);
+    if (team.secondarycolour) formData.append("SecondaryColour", team.secondarycolour);
+    if (team.tertiarycolour) formData.append("TertiaryColour", team.tertiarycolour);
     if (team.coach) formData.append("Coach", team.coach);
     if (team.stadium) formData.append("Stadium", team.stadium);
     if (team.city) formData.append("City", team.city);
@@ -62,7 +64,9 @@ export class TeamsService {
     if (team.shortName) formData.append("ShortName", team.shortName);
     if (team.abbreviation) formData.append("Abbreviation", team.abbreviation);
     if (team.logo) formData.append("Logo", team.logo);
-    if (team.colour) formData.append("Colour", team.colour);
+    if (team.primarycolour) formData.append("Colour", team.primarycolour);
+    if (team.secondarycolour) formData.append("SecondaryColour", team.secondarycolour);
+    if (team.tertiarycolour) formData.append("TertiaryColour", team.tertiarycolour);
     if (team.coach) formData.append("Coach", team.coach);
     if (team.stadium) formData.append("Stadium", team.stadium);
     if (team.city) formData.append("City", team.city);
