@@ -1,5 +1,6 @@
 import {
   AddTeam,
+  BulkCompetitionLink,
   GetAllTeamsResponse,
   GetTeamResponse,
   UpdateTeam,
@@ -108,6 +109,62 @@ export class TeamsService {
         url: `${BASE_URL}/api/Teams/slug/${encodeURIComponent(slug)}`,
       },
       "Failed to fetch team by slug.",
+    );
+  }
+
+  public async addTeamToCompetition(
+    teamId: string,
+    competitionId: string,
+  ): Promise<BooleanResponse> {
+    return apiRequest(
+      {
+        method: "POST",
+        url: `${BASE_URL}/api/Teams/${encodeURIComponent(teamId)}/competitions/${encodeURIComponent(competitionId)}`,
+      },
+      "Failed to add team to competition.",
+    );
+  }
+
+  public async removeTeamFromCompetition(
+    teamId: string,
+    competitionId: string,
+  ): Promise<BooleanResponse> {
+    return apiRequest(
+      {
+        method: "DELETE",
+        url: `${BASE_URL}/api/Teams/${encodeURIComponent(teamId)}/competitions/${encodeURIComponent(competitionId)}`,
+      },
+      "Failed to remove team from competition.",
+    );
+  }
+
+  public async addCompetitionsToTeam(
+    teamId: string,
+    competitionLink: BulkCompetitionLink,
+  ): Promise<BooleanResponse> {
+    return apiRequest(
+      {
+        method: "POST",
+        url: `${BASE_URL}/api/Teams/${encodeURIComponent(teamId)}/competitions/bulk`,
+        headers: { "Content-Type": "application/json" },
+        data: competitionLink,
+      },
+      "Failed to add competitions to team.",
+    );
+  }
+
+  public async removeCompetitionsFromTeam(
+    teamId: string,
+    competitionLink: BulkCompetitionLink,
+  ): Promise<BooleanResponse> {
+    return apiRequest(
+      {
+        method: "POST",
+        url: `${BASE_URL}/api/Teams/${encodeURIComponent(teamId)}/competitions/bulk/remove`,
+        headers: { "Content-Type": "application/json" },
+        data: competitionLink,
+      },
+      "Failed to remove competitions from team.",
     );
   }
 }

@@ -75,4 +75,16 @@ export class StandingsService {
       "Failed to fetch standings by competition.",
     );
   }
+
+  public async generateStandingsFromApi(
+    competitionId: string,
+  ): Promise<GetAllStandingsResponse> {
+    return apiRequest(
+      {
+        method: "POST",
+        url: `${BASE_URL}/api/Standings/competition/${encodeURIComponent(competitionId)}/from-api`,
+      },
+      "Failed to generate standings from API.",
+    );
+  }
 }
