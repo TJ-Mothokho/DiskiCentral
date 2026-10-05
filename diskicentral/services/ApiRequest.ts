@@ -43,20 +43,30 @@ apiClient.interceptors.response.use(
 
 export async function apiRequest<
   T extends { success: boolean; errors: string[] },
->(options: AxiosRequestConfig, errorMessage: string): Promise<T> {
+>(
+  options: AxiosRequestConfig,
+  errorMessage: string,
+  fallback?: T,
+): Promise<T> {
   try {
     const response = await apiClient.request<T>(options);
-    console.log(response.data);
-    if (!response.data.success) {
-      console.error("API request failed:", response.data.errors);
-      throw response.data.errors
+    const responseData = response.data;
+    const hasEmptyData =
+      responseData &&
+      "data" in responseData &&
+      (responseData.data === null || responseData.data === undefined);
+    if (!responseData?.success || hasEmptyData) {
+      throw responseData?.errors?.length
         ? response.data.errors
         : "Unexpected error occurred. Please refresh the page!";
     }
 
-    return response.data;
+    return responseData;
   } catch (error) {
     console.error(errorMessage, error);
+    if (fallback && options.method?.toUpperCase() === "GET") {
+      return fallback;
+    }
     throw `${errorMessage} Please try again.`;
   }
 }

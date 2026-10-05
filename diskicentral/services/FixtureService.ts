@@ -12,6 +12,12 @@ export class FixturesService {
     return apiRequest(
       { method: "GET", url: `${BASE_URL}/api/Fixtures` },
       "Failed to fetch fixtures.",
+      {
+        success: false,
+        message: "Fixtures are currently unavailable.",
+        data: [],
+        errors: ["Failed to fetch fixtures."],
+      },
     );
   }
 
@@ -80,6 +86,12 @@ export class FixturesService {
     return apiRequest(
       { method: "GET", url: `${BASE_URL}/api/Fixtures/finished` },
       "Failed to fetch finished fixtures.",
+      {
+        success: false,
+        message: "Finished fixtures are currently unavailable.",
+        data: [],
+        errors: ["Failed to fetch finished fixtures."],
+      },
     );
   }
 
@@ -99,6 +111,12 @@ export class FixturesService {
     return apiRequest(
       { method: "GET", url: `${BASE_URL}/api/Fixtures/upcoming` },
       "Failed to fetch upcoming fixtures.",
+      {
+        success: false,
+        message: "Upcoming fixtures are currently unavailable.",
+        data: [],
+        errors: ["Failed to fetch upcoming fixtures."],
+      },
     );
   }
 }

@@ -12,6 +12,12 @@ export class VideoService {
     return apiRequest(
       { method: "GET", url: `${BASE_URL}/api/Videos` },
       "Failed to fetch videos.",
+      {
+        success: false,
+        message: "Videos are currently unavailable.",
+        data: [],
+        errors: ["Failed to fetch videos."],
+      },
     );
   }
 

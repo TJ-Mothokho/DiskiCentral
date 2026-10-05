@@ -12,6 +12,12 @@ export class PlayersService {
     return apiRequest(
       { method: "GET", url: `${BASE_URL}/api/Players` },
       "Failed to fetch players.",
+      {
+        success: false,
+        message: "Players are currently unavailable.",
+        data: [],
+        errors: ["Failed to fetch players."],
+      },
     );
   }
 

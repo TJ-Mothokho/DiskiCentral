@@ -13,6 +13,12 @@ export class TeamsService {
     return apiRequest(
       { method: "GET", url: `${BASE_URL}/api/Teams` },
       "Failed to fetch teams.",
+      {
+        success: false,
+        message: "Teams are currently unavailable.",
+        data: [],
+        errors: ["Failed to fetch teams."],
+      },
     );
   }
 
@@ -111,6 +117,12 @@ export class TeamsService {
         url: `${BASE_URL}/api/Teams/competition/${encodeURIComponent(competitionId)}`,
       },
       "Failed to fetch teams by competition.",
+      {
+        success: false,
+        message: "Teams for this competition are currently unavailable.",
+        data: [],
+        errors: ["Failed to fetch teams by competition."],
+      },
     );
   }
 

@@ -12,6 +12,12 @@ export class TransfersService {
     return apiRequest(
       { method: "GET", url: `${BASE_URL}/api/Transfers` },
       "Failed to fetch transfers.",
+      {
+        success: false,
+        message: "Transfers are currently unavailable.",
+        data: [],
+        errors: ["Failed to fetch transfers."],
+      },
     );
   }
 

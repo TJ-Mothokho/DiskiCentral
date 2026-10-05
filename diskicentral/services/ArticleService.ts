@@ -37,6 +37,12 @@ export class ArticlesService {
     return apiRequest(
       { method: "GET", url: `${BASE_URL}/api/Articles` },
       "Failed to fetch articles.",
+      {
+        success: false,
+        message: "Articles are currently unavailable.",
+        data: [],
+        errors: ["Failed to fetch articles."],
+      },
     );
   }
 
