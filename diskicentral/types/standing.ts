@@ -1,7 +1,8 @@
 export type Standing = {
   id: string;
   competitionId: string;
-  teamId: string;
+  apiId: number | null;
+  fotmobLink: string | null;
   played: number;
   wins: number;
   draws: number;
@@ -13,13 +14,13 @@ export type Standing = {
   position: number;
   createdAt: string;
   updatedAt: string;
-  teamName: string | null;
   competitionName: string | null;
 };
 
 export type AddStanding = {
   competitionId: string;
-  teamId: string;
+  apiId: number | null;
+  fotmobLink: string | null;
   played: number;
   wins: number;
   draws: number;
@@ -32,6 +33,8 @@ export type AddStanding = {
 };
 
 export type UpdateStanding = {
+  apiId: number | null;
+  fotmobLink: string | null;
   played: number | null;
   wins: number | null;
   draws: number | null;

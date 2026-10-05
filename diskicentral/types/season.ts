@@ -1,3 +1,5 @@
+import { CompetitionStatus } from "./common";
+
 export type Season = {
   id: string;
   name: string;
@@ -11,13 +13,13 @@ export type Season = {
 export type AddSeason = {
   name: string;
   slug: string;
-  status: number;
+  status: CompetitionStatus;
 };
 
 export type UpdateSeason = {
   name: string | null;
   slug: string | null;
-  status: number | null;
+  status: CompetitionStatus | null;
 };
 
 export type GetAllSeasonsResponse = {

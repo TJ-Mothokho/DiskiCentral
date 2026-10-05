@@ -31,9 +31,9 @@ export type AddTransfer = {
   playerId: string;
   fromTeamId: string;
   toTeamId: string;
-  fee: number;
+  fee: number | null; // "Undisclosed" if null
   transferDate: string;
-  status: number;
+  status: TransferStatus;
 };
 
 export type UpdateTransfer = {
@@ -43,3 +43,10 @@ export type UpdateTransfer = {
   transferDate: string | null;
   status: number | null;
 };
+
+export enum TransferStatus {
+  Rumour = 0,
+  Confirmed = 1,
+  Completed = 2,
+  Cancelled = 3,
+}

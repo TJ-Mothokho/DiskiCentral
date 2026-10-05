@@ -5,8 +5,12 @@ export type Team = {
   shortName: string | null;
   abbreviation: string | null;
   apiId: number | null;
+  fotmobLink: string | null;
   logo: string | null;
-  colour: string | null;
+  logoMimeType: string | null;
+  primarycolour: string | null;
+  secondarycolour: string | null;
+  tertiarycolour: string | null;
   coach: string | null;
   stadium: string | null;
   city: string | null;
@@ -25,9 +29,12 @@ export type AddTeam = {
   slug: string;
   shortName: string | null;
   apiId: number | null;
+  fotmobLink: string | null;
   abbreviation: string | null;
   logo: File | null;
-  colour: string | null;
+  primarycolour: string | null;
+  secondarycolour: string | null;
+  tertiarycolour: string | null;
   coach: string | null;
   stadium: string | null;
   city: string | null;
@@ -44,7 +51,9 @@ export type UpdateTeam = {
   apiId: number | null;
   abbreviation: string | null;
   logo: File | null;
-  colour: string | null;
+  primarycolour: string | null;
+  secondarycolour: string | null;
+  tertiarycolour: string | null;
   coach: string | null;
   stadium: string | null;
   city: string | null;

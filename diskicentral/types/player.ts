@@ -14,13 +14,16 @@ export type GetPlayerResponse = {
 
 export type Player = {
   id: string;
+  apiId: number | null;
+  fotmobLink: string | null;
   currentTeamId: string;
-  name: "string";
-  slug: "string";
+  name: string;
+  slug: string;
   nationality: string | null;
   position: number;
   birthDate: string;
   photo: string | null;
+  photoMimeType: string | null;
   abroad: boolean;
   biography: string | null;
   rating: number;
@@ -30,27 +33,38 @@ export type Player = {
 };
 
 export type AddPlayer = {
+  apiId: number | null;
+  fotmobLink: string | null;
   currentTeamId: string;
   name: string;
   slug: string;
   nationality: string | null;
-  position: number;
+  position: PlayerPosition;
   birthDate: string;
-  photo: string | null;
+  photo: File | null;
   abroad: boolean;
   biography: string | null;
   rating: number;
 };
 
 export type UpdatePlayer = {
+  apiId: number | null;
+  fotmobLink: string | null;
   currentTeamId: string | null;
   name: string | null;
   slug: string | null;
   nationality: string | null;
-  position: boolean | null;
+  position: PlayerPosition | null;
   birthDate: string | null;
-  photo: string | null;
+  photo: File | null;
   abroad: boolean | null;
   biography: string | null;
   rating: number | null;
 };
+
+export enum PlayerPosition {
+  Goalkeeper = 0,
+  Defender = 1,
+  Midfielder = 2,
+  Forward = 3
+}

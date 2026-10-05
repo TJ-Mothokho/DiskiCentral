@@ -4,3 +4,9 @@ export type BooleanResponse = {
   data: boolean;
   errors: string[];
 };
+
+export enum CompetitionStatus {
+  Upcoming = 0,
+  Active = 1,
+  Completed = 2,
+}

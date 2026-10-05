@@ -63,8 +63,9 @@ export type UpdateArticle = {
   excerpt: string | null;
   body: string | null;
   categoryId: string | null;
+  personId: string | null;
   teamId: string | null;
-  tagIds: string[];
+  tagIds: string[] | null;
   heroImage: File | null;
   thumbnail: File | null;
   featured: boolean;
