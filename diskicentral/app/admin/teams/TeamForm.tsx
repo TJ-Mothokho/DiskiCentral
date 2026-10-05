@@ -21,7 +21,10 @@ type FormValues = {
   shortName: string;
   abbreviation: string;
   apiId: number | null;
-  colour: string;
+  fotmobLink: string;
+  primarycolour: string;
+  secondarycolour: string;
+  tertiarycolour: string;
   coach: string;
   stadium: string;
   city: string;
@@ -46,7 +49,10 @@ function initialValues(team?: Team): FormValues {
     shortName: team?.shortName ?? "",
     abbreviation: team?.abbreviation ?? "",
     apiId: team?.apiId ?? null,
-    colour: team?.colour ?? "#00C853",
+    fotmobLink: team?.fotmobLink ?? "",
+    primarycolour: team?.primarycolour ?? "#00C853",
+    secondarycolour: team?.secondarycolour ?? "#000000",
+    tertiarycolour: team?.tertiarycolour ?? "#FFFFFF",
     coach: team?.coach ?? "",
     stadium: team?.stadium ?? "",
     city: team?.city ?? "",
@@ -189,6 +195,13 @@ export default function TeamForm({ team }: TeamFormProps) {
             }
             placeholder="External data provider ID"
           />
+          <Input
+            label="FotMob link"
+            name="fotmobLink"
+            value={values.fotmobLink}
+            onChange={(e) => setField("fotmobLink", e.target.value)}
+            placeholder="https://www.fotmob.com/teams/..."
+          />
           <div className="grid gap-4 md:grid-cols-2">
             <Input
               label="Coach"
@@ -230,27 +243,37 @@ export default function TeamForm({ team }: TeamFormProps) {
               onChange={(e) => setField("founded", Number(e.target.value))}
               placeholder="1900"
             />
-            <div className="space-y-1.5">
-              <label
-                htmlFor="colour"
-                className="block text-xs font-medium text-gray-400">
-                Colour
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  id="colour"
-                  type="color"
-                  value={values.colour}
-                  onChange={(e) => setField("colour", e.target.value)}
-                  className="h-9 w-11 rounded border border-gray-700 bg-gray-900 p-1"
-                />
-                <input
-                  value={values.colour}
-                  onChange={(e) => setField("colour", e.target.value)}
-                  className="flex-1 rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-white outline-none focus:border-[#00C853]"
-                />
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {(
+              [
+                ["primarycolour", "Primary colour"],
+                ["secondarycolour", "Secondary colour"],
+                ["tertiarycolour", "Tertiary colour"],
+              ] as const
+            ).map(([field, label]) => (
+              <div key={field} className="space-y-1.5">
+                <label
+                  htmlFor={field}
+                  className="block text-xs font-medium text-gray-400">
+                  {label}
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    id={field}
+                    type="color"
+                    value={values[field]}
+                    onChange={(e) => setField(field, e.target.value)}
+                    className="h-9 w-11 rounded border border-gray-700 bg-gray-900 p-1"
+                  />
+                  <input
+                    value={values[field]}
+                    onChange={(e) => setField(field, e.target.value)}
+                    className="min-w-0 flex-1 rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-white outline-none focus:border-[#00C853]"
+                  />
+                </div>
               </div>
-            </div>
+            ))}
           </div>
           <div className="space-y-1.5">
             <label

@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import TeamContent from "@/components/team/TeamContent";
 import { ArticlesService } from "@/services/ArticleService";
 import { FixturesService } from "@/services/FixtureService";
+import { FixtureStatus } from "@/types/fixture";
 import { PlayersService } from "@/services/PlayerService";
-import { ResultsService } from "@/services/ResultService";
 import { StandingsService } from "@/services/StandingService";
 import { TagsService } from "@/services/TagService";
 import { TeamsService } from "@/services/TeamService";
@@ -26,23 +26,22 @@ export default async function TeamPage({ params }: PageProps<"/team/[slug]">) {
   const [
     articlesResponse,
     fixturesResponse,
-    resultsResponse,
     playersResponse,
     tagsResponse,
   ] = await Promise.all([
     ArticlesService.getApiArticles(),
     FixturesService.getFixturesByTeamId(team.id),
-    ResultsService.getApiResults(),
     PlayersService.getPlayersByTeamId(team.id),
     tagsService.getApiTags(),
   ]);
 
-  const fixtures = fixturesResponse.data ?? [];
-  const fixtureIds = new Set(fixtures.map((fixture) => fixture.id));
-  const results = (resultsResponse.data ?? []).filter((result) =>
-    fixtureIds.has(result.fixtureId),
+  const allFixtures = fixturesResponse.data ?? [];
+  const fixtures = allFixtures.filter(
+    (fixture) => fixture.status !== FixtureStatus.Finished,
   );
-  const fixtureById = new Map(fixtures.map((fixture) => [fixture.id, fixture]));
+  const results = allFixtures.filter(
+    (fixture) => fixture.status === FixtureStatus.Finished,
+  );
 
   const matchingTag = (tagsResponse.data ?? []).find(
     (tag) => tag.slug === team.slug,
@@ -77,7 +76,6 @@ export default async function TeamPage({ params }: PageProps<"/team/[slug]">) {
       articles={articles}
       fixtures={fixtures}
       results={results}
-      fixtureById={fixtureById}
       players={playersResponse.data ?? []}
       standingsByCompetition={standingsByCompetition}
     />

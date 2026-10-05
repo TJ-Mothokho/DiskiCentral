@@ -8,7 +8,6 @@ import MatchCard from "@/components/match/MatchCard";
 import type { Article } from "@/types/article";
 import type { Fixture } from "@/types/fixture";
 import type { Player } from "@/types/player";
-import type { Result } from "@/types/result";
 import type { Standing } from "@/types/standing";
 import type { Team } from "@/types/team";
 
@@ -17,8 +16,7 @@ interface TeamContentProps {
   competitions: { id: string; name: string }[];
   articles: Article[];
   fixtures: Fixture[];
-  results: Result[];
-  fixtureById: Map<string, Fixture>;
+  results: Fixture[];
   players: Player[];
   standingsByCompetition: Record<string, Standing[]>;
 }
@@ -49,7 +47,6 @@ export default function TeamContent({
   articles,
   fixtures,
   results,
-  fixtureById,
   players,
   standingsByCompetition,
 }: TeamContentProps) {
@@ -78,18 +75,33 @@ export default function TeamContent({
 
   const filteredResults = useMemo(
     () =>
-      results.filter((result) => {
-        if (selectedCompetitionId === ALL_COMPETITIONS) return true;
-        const fixture = fixtureById.get(result.fixtureId);
-        return fixture?.competitionId === selectedCompetitionId;
-      }),
-    [results, fixtureById, selectedCompetitionId],
+      selectedCompetitionId === ALL_COMPETITIONS
+        ? results
+        : results.filter(
+            (result) => result.competitionId === selectedCompetitionId,
+          ),
+    [results, selectedCompetitionId],
   );
 
   const standings = tableCompetitionId
     ? (standingsByCompetition[tableCompetitionId] ?? [])
     : [];
-  const teamStanding = standings.find((row) => row.teamId === team.id);
+  const teamStats = filteredResults.reduce(
+    (acc, match) => {
+      if (match.homeScore === null || match.awayScore === null) return acc;
+      const isHome = match.homeTeamId === team.id;
+      const goalsFor = isHome ? match.homeScore : match.awayScore;
+      const goalsAgainst = isHome ? match.awayScore : match.homeScore;
+      acc.played += 1;
+      acc.goalsFor += goalsFor;
+      acc.goalsAgainst += goalsAgainst;
+      if (goalsFor > goalsAgainst) acc.wins += 1;
+      else if (goalsFor === goalsAgainst) acc.draws += 1;
+      else acc.losses += 1;
+      return acc;
+    },
+    { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0 },
+  );
 
   const fixtureMatches = filteredFixtures.map((fixture) => ({
     id: fixture.id,
@@ -106,20 +118,17 @@ export default function TeamContent({
     status: "scheduled" as const,
   }));
 
-  const resultMatches = filteredResults.map((result) => {
-    const fixture = fixtureById.get(result.fixtureId);
-    return {
-      id: result.id,
-      competition: fixture?.competitionName ?? "Result",
-      homeTeam: fixture?.homeTeamName ?? "Home",
-      awayTeam: fixture?.awayTeamName ?? "Away",
-      date: fixture?.kickoff ?? result.createdAt,
-      venue: fixture?.venue ?? undefined,
-      homeScore: result.homeScore,
-      awayScore: result.awayScore,
-      status: "completed" as const,
-    };
-  });
+  const resultMatches = filteredResults.map((result) => ({
+    id: result.id,
+    competition: result.competitionName ?? "Result",
+    homeTeam: result.homeTeamName ?? "Home",
+    awayTeam: result.awayTeamName ?? "Away",
+    date: result.kickoff,
+    venue: result.venue ?? undefined,
+    homeScore: result.homeScore ?? undefined,
+    awayScore: result.awayScore ?? undefined,
+    status: "completed" as const,
+  }));
 
   const squadByPosition = POSITION_GROUPS.map((group) => ({
     ...group,
@@ -133,7 +142,9 @@ export default function TeamContent({
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
           <div
             className="w-20 h-20 rounded-xl overflow-hidden bg-gray-200 shrink-0"
-            style={{ borderBottom: `4px solid ${team.colour ?? "#00C853"}` }}>
+            style={{
+              borderBottom: `4px solid ${team.primarycolour ?? "#00C853"}`,
+            }}>
             {team.logo && (
               <img
                 src={team.logo}
@@ -287,7 +298,7 @@ export default function TeamContent({
             <thead
               className={`${darkMode ? "bg-gray-800 text-gray-300" : "bg-gray-50 text-gray-600"}`}>
               <tr>
-                {["#", "Team", "P", "W", "D", "L", "GD", "Pts"].map(
+                {["#", "P", "W", "D", "L", "GD", "Pts"].map(
                   (heading) => (
                     <th
                       key={heading}
@@ -302,14 +313,9 @@ export default function TeamContent({
               {standings.map((row) => (
                 <tr
                   key={row.id}
-                  className={`border-t ${row.teamId === team.id ? "bg-[#00C853]/10" : ""} ${darkMode ? "border-gray-800 hover:bg-gray-800" : "border-gray-50 hover:bg-gray-50"}`}>
+                  className={`border-t ${darkMode ? "border-gray-800 hover:bg-gray-800" : "border-gray-50 hover:bg-gray-50"}`}>
                   <td className="px-4 py-3 font-semibold text-[#00C853]">
                     {row.position}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`${headingClass}`}>
-                      {row.teamName ?? "Unknown team"}
-                    </span>
                   </td>
                   <td className="text-center px-3 py-3">{row.played}</td>
                   <td className="text-center px-3 py-3">{row.wins}</td>
@@ -337,16 +343,16 @@ export default function TeamContent({
 
       {activeTab === "stats" && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl">
-          {teamStanding ? (
+          {teamStats.played > 0 ? (
             [
-              ["Played", teamStanding.played],
-              ["Wins", teamStanding.wins],
-              ["Draws", teamStanding.draws],
-              ["Losses", teamStanding.losses],
-              ["Goals For", teamStanding.goalsFor],
-              ["Goals Against", teamStanding.goalsAgainst],
-              ["Goal Diff", teamStanding.goalDifference],
-              ["Points", teamStanding.points],
+              ["Played", teamStats.played],
+              ["Wins", teamStats.wins],
+              ["Draws", teamStats.draws],
+              ["Losses", teamStats.losses],
+              ["Goals For", teamStats.goalsFor],
+              ["Goals Against", teamStats.goalsAgainst],
+              ["Goal Diff", teamStats.goalsFor - teamStats.goalsAgainst],
+              ["Points", teamStats.wins * 3 + teamStats.draws],
             ].map(([label, value]) => (
               <div key={String(label)} className={`${panelClass} text-center`}>
                 <div className="font-display font-bold text-2xl text-[#00C853]">

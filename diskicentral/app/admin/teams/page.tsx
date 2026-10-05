@@ -84,47 +84,69 @@ export default function AdminTeamsPage() {
             </tr>
           </thead>
           <tbody>
-            {teams.map((team) => (
-              <tr key={team.id} className="border-t border-gray-800">
-                <td className="px-4 py-3 text-gray-200">
-                  {team.logo ? (
-                    <img
-                      src={team.logo}
-                      alt={`${team.name} logo`}
-                      className="h-6 w-6 rounded-full"
-                    />
-                  ) : (
-                    <div className="h-6 w-6 rounded-full bg-gray-700" />
-                  )}
-                </td>
-                <td className="px-4 py-3 text-gray-200">
-                  <Link
-                    href={`/admin/teams/${team.id}/edit`}
-                    className="hover:text-[#00C853]">
-                    {team.name}
-                  </Link>
-                </td>
-                <td className="px-4 py-3 text-xs text-gray-400">{team.slug}</td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-2">
+            {loading &&
+              Array.from({ length: 6 }, (_, row) => (
+                <tr
+                  key={`skeleton-${row}`}
+                  className="border-t border-gray-800">
+                  <td className="px-4 py-3">
+                    <div className="h-6 w-6 animate-pulse rounded-full bg-gray-800" />
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="h-4 w-40 animate-pulse rounded bg-gray-800" />
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="h-4 w-28 animate-pulse rounded bg-gray-800" />
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="ml-auto h-4 w-12 animate-pulse rounded bg-gray-800" />
+                  </td>
+                </tr>
+              ))}
+            {!loading &&
+              teams.map((team) => (
+                <tr key={team.id} className="border-t border-gray-800">
+                  <td className="px-4 py-3 text-gray-200">
+                    {team.logo ? (
+                      <img
+                        src={team.logo}
+                        alt={`${team.name} logo`}
+                        className="h-6 w-6 rounded-full"
+                      />
+                    ) : (
+                      <div className="h-6 w-6 rounded-full bg-gray-700" />
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-gray-200">
                     <Link
                       href={`/admin/teams/${team.id}/edit`}
-                      aria-label={`Edit ${team.name}`}
-                      className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800">
-                      <Pencil size={14} />
+                      className="hover:text-[#00C853]">
+                      {team.name}
                     </Link>
-                    <button
-                      type="button"
-                      aria-label={`Delete ${team.name}`}
-                      disabled={deletingId === team.id}
-                      onClick={() => void handleDelete(team.id)}
-                      className="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-gray-800 disabled:opacity-50">
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-gray-400">
+                    {team.slug}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link
+                        href={`/admin/teams/${team.id}/edit`}
+                        aria-label={`Edit ${team.name}`}
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800">
+                        <Pencil size={14} />
+                      </Link>
+                      <button
+                        type="button"
+                        aria-label={`Delete ${team.name}`}
+                        disabled={deletingId === team.id}
+                        onClick={() => void handleDelete(team.id)}
+                        className="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-gray-800 disabled:opacity-50">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
         {!loading && teams.length === 0 && (

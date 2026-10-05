@@ -37,6 +37,15 @@ export default function EditTeamPage({
       </div>
     );
   }
-  if (!team) return <p className="text-sm text-gray-500">Loading team...</p>;
+  if (!team)
+    return (
+      <div className="mx-auto max-w-6xl space-y-5" aria-busy="true">
+        <div className="h-8 w-48 animate-pulse rounded bg-gray-800" />
+        <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
+          <div className="h-[32rem] animate-pulse rounded-xl border border-gray-800 bg-[#111]" />
+          <div className="h-[32rem] animate-pulse rounded-xl border border-gray-800 bg-[#111]" />
+        </div>
+      </div>
+    );
   return <TeamForm team={team} />;
 }
