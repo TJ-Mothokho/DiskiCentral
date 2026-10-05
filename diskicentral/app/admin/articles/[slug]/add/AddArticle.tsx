@@ -144,6 +144,7 @@ export default function ArticleForm({ article }: ArticleFormProps) {
       if (editing && article) {
         const payload: UpdateArticle = {
           ...values,
+          personId: article.personId,
           title: values.title,
           slug: values.slug,
           body: values.body,

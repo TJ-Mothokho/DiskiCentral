@@ -27,11 +27,13 @@ export default function AdminArticlesPage() {
   const [titleSortAsc, setTitleSortAsc] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     void ArticlesService.getApiArticles()
       .then((response) => setArticles(response.data ?? []))
-      .catch(() => setArticles([]));
+      .catch(() => setArticles([]))
+      .finally(() => setLoading(false));
   }, []);
 
   const authors = useMemo(
@@ -89,7 +91,9 @@ export default function AdminArticlesPage() {
             Articles
           </h1>
           <p className="text-xs text-gray-500 mt-1">
-            {articles.length} total articles
+            {loading
+              ? "Loading articles..."
+              : `${articles.length} total articles`}
           </p>
         </div>
         <Link
@@ -171,57 +175,74 @@ export default function AdminArticlesPage() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((article) => (
-              <tr
-                key={article.id}
-                className="border-t border-gray-800 hover:bg-gray-900/30">
-                <td className="px-4 py-3 text-gray-200 font-medium min-w-64">
-                  <Link
-                    href={`/admin/articles/${article.id}/edit`}
-                    className="hover:text-[#00C853]">
-                    {article.title}
-                  </Link>
-                </td>
-                <td className="px-4 py-3 text-xs text-gray-400">
-                  {article.categoryName ?? "Uncategorized"}
-                </td>
-                <td className="px-4 py-3 text-xs text-gray-400">
-                  {article.personName ?? "Unknown"}
-                </td>
-                <td className="px-4 py-3 text-xs text-gray-400">
-                  {STATUS_LABELS[article.status] ?? "Draft"}
-                </td>
-                <td className="px-4 py-3 text-xs text-gray-400">
-                  {article.publishedAt
-                    ? new Date(article.publishedAt).toLocaleDateString("en-ZA")
-                    : "—"}
-                </td>
-                <td className="px-4 py-3 text-xs text-gray-400">
-                  {article.views.toLocaleString()}
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-2">
+            {loading &&
+              Array.from({ length: 6 }, (_, row) => (
+                <tr
+                  key={`skeleton-${row}`}
+                  className="border-t border-gray-800">
+                  {Array.from({ length: 7 }, (_, cell) => (
+                    <td key={cell} className="px-4 py-3">
+                      <div
+                        className={`h-4 animate-pulse rounded bg-gray-800 ${cell === 0 ? "w-56" : "w-16"}`}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            {!loading &&
+              filtered.map((article) => (
+                <tr
+                  key={article.id}
+                  className="border-t border-gray-800 hover:bg-gray-900/30">
+                  <td className="px-4 py-3 text-gray-200 font-medium min-w-64">
                     <Link
                       href={`/admin/articles/${article.id}/edit`}
-                      aria-label={`Edit ${article.title}`}
-                      className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800">
-                      <Pencil size={14} />
+                      className="hover:text-[#00C853]">
+                      {article.title}
                     </Link>
-                    <button
-                      type="button"
-                      aria-label={`Delete ${article.title}`}
-                      disabled={deletingId === article.id}
-                      onClick={() => void handleDelete(article)}
-                      className="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-gray-800 disabled:opacity-50">
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-gray-400">
+                    {article.categoryName ?? "Uncategorized"}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-gray-400">
+                    {article.personName ?? "Unknown"}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-gray-400">
+                    {STATUS_LABELS[article.status] ?? "Draft"}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-gray-400">
+                    {article.publishedAt
+                      ? new Date(article.publishedAt).toLocaleDateString(
+                          "en-ZA",
+                        )
+                      : "—"}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-gray-400">
+                    {article.views.toLocaleString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link
+                        href={`/admin/articles/${article.id}/edit`}
+                        aria-label={`Edit ${article.title}`}
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800">
+                        <Pencil size={14} />
+                      </Link>
+                      <button
+                        type="button"
+                        aria-label={`Delete ${article.title}`}
+                        disabled={deletingId === article.id}
+                        onClick={() => void handleDelete(article)}
+                        className="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-gray-800 disabled:opacity-50">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
-        {filtered.length === 0 && (
+        {!loading && filtered.length === 0 && (
           <p className="p-8 text-center text-sm text-gray-500">
             No articles found.
           </p>

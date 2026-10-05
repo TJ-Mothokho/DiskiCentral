@@ -14,6 +14,7 @@ import { useState } from "react";
 import CategoryBadge from "@/components/CategoryBadge";
 import { useTheme } from "@/themes/ThemeContext";
 import { Article } from "@/types/article";
+import { Tag as TagType } from "@/types/tag";
 import { Video } from "@/types/video";
 import ArticleCard from "./ArticleCard";
 
@@ -22,11 +23,13 @@ const ARTICLES_PER_PAGE = 6;
 interface ArticlesContentProps {
   articles: Article[];
   videos: Video[];
+  tags: TagType[];
 }
 
 export default function ArticlesContent({
   articles,
   videos,
+  tags,
 }: ArticlesContentProps) {
   const { darkMode } = useTheme();
   const [search, setSearch] = useState("");
@@ -63,9 +66,13 @@ export default function ArticlesContent({
     currentPage * ARTICLES_PER_PAGE,
   );
   const trending = articles.filter((article) => article.trending).slice(0, 5);
+  const tagById = new Map(tags.map((tag) => [tag.id, tag]));
   const popularTags = Array.from(
     new Set(articles.flatMap((article) => article.tagIds)),
-  ).slice(0, 8);
+  )
+    .map((id) => tagById.get(id))
+    .filter((tag): tag is TagType => Boolean(tag))
+    .slice(0, 8);
   const selectedCategory = categories.find(
     (category) => category.id === selectedCategoryId,
   );
@@ -274,10 +281,10 @@ export default function ArticlesContent({
               <div className="flex flex-wrap gap-2">
                 {popularTags.map((tag) => (
                   <Link
-                    key={tag}
-                    href={`/search?q=${encodeURIComponent(tag)}`}
+                    key={tag.id}
+                    href={`/search?q=${encodeURIComponent(tag.slug)}`}
                     className={`px-2.5 py-1 rounded-full text-xs font-medium hover:bg-[#00C853] hover:text-black ${darkMode ? "bg-gray-800 text-gray-300" : "bg-gray-100 text-gray-600"}`}>
-                    {tag}
+                    {tag.name}
                   </Link>
                 ))}
               </div>
