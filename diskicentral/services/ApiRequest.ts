@@ -43,12 +43,9 @@ apiClient.interceptors.response.use(
 
 export async function apiRequest<
   T extends { success: boolean; errors: string[] },
->(
-  options: AxiosRequestConfig,
-  errorMessage: string,
-  fallback?: T,
-): Promise<T> {
+>(options: AxiosRequestConfig, errorMessage: string, fallback?: T): Promise<T> {
   try {
+    console.log("API Request:", options.method, options.url, options.params);
     const response = await apiClient.request<T>(options);
     const responseData = response.data;
     const hasEmptyData =

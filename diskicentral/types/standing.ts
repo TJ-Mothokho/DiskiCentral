@@ -1,61 +1,83 @@
-export type Standing = {
-  id: string;
-  competitionId: string;
-  apiId: number | null;
-  fotmobLink: string | null;
-  played: number;
-  wins: number;
-  draws: number;
-  losses: number;
-  goalsFor: number;
-  goalsAgainst: number;
-  goalDifference: number;
-  points: number;
-  position: number;
-  createdAt: string;
-  updatedAt: string;
-  competitionName: string | null;
-};
-
-export type AddStanding = {
-  competitionId: string;
-  apiId: number | null;
-  fotmobLink: string | null;
-  played: number;
-  wins: number;
-  draws: number;
-  losses: number;
-  goalsFor: number;
-  goalsAgainst: number;
-  goalDifference: number;
-  points: number;
-  position: number;
-};
-
-export type UpdateStanding = {
-  apiId: number | null;
-  fotmobLink: string | null;
-  played: number | null;
-  wins: number | null;
-  draws: number | null;
-  losses: number | null;
-  goalsFor: number | null;
-  goalsAgainst: number | null;
-  goalDifference: number | null;
-  points: number | null;
-  position: number | null;
-};
-
-export type GetAllStandingsResponse = {
+export type StandingsResponse = {
   success: boolean;
-  message: string;
-  data: Standing[];
-  errors: string[];
-};
+    message: string;
+    data: Data;
+    errors: object[];
+}
 
-export type GetStandingResponse = {
-  success: boolean;
-  message: string;
-  data: Standing;
-  errors: string[];
-};
+interface Legend {
+    title: string;
+    tKey: string;
+    color: string;
+    indices: int[];
+}
+
+interface Standings {
+    name: string;
+    shortName: string;
+    id: number;
+    pageUrl: string;
+    deduction: object | null;
+    ongoing: object | null;
+    played: number;
+    wins: number;
+    draws: number;
+    losses: number;
+    scoresStr: string;
+    goalConDiff: number;
+    pts: number;
+    idx: number;
+    qualColor: string;
+}
+
+interface Home {
+    name: string;
+    shortName: string;
+    id: number;
+    pageUrl: string;
+    deduction: object | null;
+    ongoing: object | null;
+    played: number;
+    wins: number;
+    draws: number;
+    losses: number;
+    scoresStr: string;
+    goalConDiff: number;
+    goalsScored: number;
+    pts: number;
+    idx: number;
+    qualColor: string;
+}
+
+interface Away {
+    name: string;
+    shortName: string;
+    id: number;
+    pageUrl: string;
+    deduction: object | null;
+    ongoing: object | null;
+    played: number;
+    wins: number;
+    draws: number;
+    losses: number;
+    scoresStr: string;
+    goalConDiff: number;
+    goalsScored: number;
+    pts: number;
+    idx: number;
+    qualColor: string;
+}
+
+interface Data {
+    source: string;
+    sourceUrl: object | null;
+    leagueId: object | null;
+    leagueName: object | null;
+    season: string;
+    pageUrl: object | null;
+    legend: Legend[];
+    standings: Standings[];
+    home: Home[];
+    away: Away[];
+    ongoing: object[];
+}

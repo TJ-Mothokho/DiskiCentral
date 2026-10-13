@@ -4,7 +4,6 @@ import CompetitionContent from "@/components/competition/CompetitionContent";
 import { ArticlesService } from "@/services/ArticleService";
 import { CompetitionsService } from "@/services/CompetitionService";
 import { FixturesService } from "@/services/FixtureService";
-import { StandingsService } from "@/services/StandingService";
 import { TagsService } from "@/services/TagService";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +13,6 @@ export default async function LeaguePage({
 }: PageProps<"/league/[slug]">) {
   const { slug } = await params;
   const competitionsService = new CompetitionsService();
-  const standingsService = new StandingsService();
   const tagsService = new TagsService();
   const competitionResponse =
     await competitionsService.getCompetitionBySlug(slug);
@@ -28,7 +26,7 @@ export default async function LeaguePage({
     await Promise.all([
       ArticlesService.getApiArticles(),
       FixturesService.getFixturesByCompetitionId(competition.id),
-      standingsService.getStandingsByCompetitionId(competition.id),
+      competitionsService.getStandingsByCompetitionId(competition.id),
       tagsService.getApiTags(),
     ]);
 

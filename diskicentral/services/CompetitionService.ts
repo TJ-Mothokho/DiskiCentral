@@ -68,6 +68,7 @@ export class CompetitionsService {
   public async getCompetitionBySlug(
     slug: string,
   ): Promise<GetCompetitionResponse> {
+    console.log("Fetching competition by slug:", slug); // Debugging log
     return apiRequest(
       {
         method: "GET",
@@ -86,6 +87,18 @@ export class CompetitionsService {
         url: `${BASE_URL}/api/Competitions/season/${encodeURIComponent(seasonId)}`,
       },
       "Failed to fetch competitions by season.",
+    );
+  }
+
+  public async getStandingsByCompetitionId(
+    competitionId: string,
+  ): Promise<StandingsResponse> {
+    return apiRequest(
+      {
+        method: "GET",
+        url: `${BASE_URL}/api/Standings/competition/${encodeURIComponent(competitionId)}`,
+      },
+      "Failed to fetch standings by competition.",
     );
   }
 
