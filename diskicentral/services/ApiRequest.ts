@@ -60,7 +60,15 @@ export async function apiRequest<
 
     return responseData;
   } catch (error) {
+    console.log(
+      "============================API Request Error===================================",
+    );
+    console.log("API Request:", options.method, options.url, options.params);
+    console.log(error);
     console.error(errorMessage, error);
+    console.log(
+      "============================Error Ends===================================",
+    );
     if (fallback && options.method?.toUpperCase() === "GET") {
       return fallback;
     }

@@ -7,6 +7,7 @@ import {
 import { apiRequest, BASE_URL } from "@/services/ApiRequest";
 import { BooleanResponse } from "@/types/common";
 import { BulkTeamLink } from "@/types/team";
+import { StandingsResponse } from "@/types/standing";
 
 export class CompetitionsService {
   public async getApiCompetitions(): Promise<GetAllCompetitionsResponse> {
