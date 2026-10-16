@@ -11,23 +11,20 @@ export default async function ArticlePage({
 }: PageProps<"/article/[slug]">) {
   const { slug } = await params;
 
-  try {
-    const [articleResponse, articlesResponse, tagsResponse] = await Promise.all(
-      [
-        ArticlesService.getArticleBySlug(slug),
-        ArticlesService.getApiArticles(),
-        new TagsService().getApiTags(),
-      ],
-    );
+  const articleResponse = await ArticlesService.getArticleBySlug(slug).catch(
+    () => notFound(),
+  );
 
-    return (
-      <ArticleContent
-        article={articleResponse.data}
-        articles={articlesResponse.data}
-        tags={tagsResponse.data ?? []}
-      />
-    );
-  } catch {
-    notFound();
-  }
+  const [articlesResponse, tagsResponse] = await Promise.all([
+    ArticlesService.getApiArticles(),
+    new TagsService().getApiTags(),
+  ]);
+
+  return (
+    <ArticleContent
+      article={articleResponse.data}
+      articles={articlesResponse.data ?? []}
+      tags={tagsResponse.data ?? []}
+    />
+  );
 }

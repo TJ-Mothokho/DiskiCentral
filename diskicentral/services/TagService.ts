@@ -12,6 +12,12 @@ export class TagsService {
     return apiRequest(
       { method: "GET", url: `${BASE_URL}/api/Tags` },
       "Failed to fetch tags.",
+      {
+        success: false,
+        message: "Tags are currently unavailable.",
+        data: [],
+        errors: ["Failed to fetch tags."],
+      },
     );
   }
 
