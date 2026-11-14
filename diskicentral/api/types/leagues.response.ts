@@ -1,5 +1,7 @@
 /** API-Football v3 response types for leagues. */
 
+import type { ApiErrorResponse } from "./api-error.response";
+
 export interface ApiPaging {
   current: number;
   total: number;
@@ -61,7 +63,31 @@ export interface CountryReference {
   flag: string | null;
 }
 
-export type LeaguesResponse = LeaguesResponseEnvelope<LeagueResponseItem[]>;
+export interface LeaguesNoContentResponse {
+  get: "leagues";
+  parameters: [];
+  errors: {
+    time: string;
+    bug: string;
+    report: "leagues";
+  };
+  results: 0;
+  paging: ApiPaging;
+  response: [];
+}
+
+export type LeaguesErrorResponse = ApiErrorResponse;
+
+export interface LeaguesApiResponses {
+  200: LeaguesResponseEnvelope<LeagueResponseItem[]>;
+  204: LeaguesNoContentResponse;
+  499: LeaguesErrorResponse;
+  500: LeaguesErrorResponse;
+}
+
+export type LeaguesResponse =
+  | LeaguesApiResponses[200]
+  | LeaguesApiResponses[204];
 
 export type LeaguesResponseEnvelope<T> = {
   get: "leagues" | string;
