@@ -1,5 +1,8 @@
 /** API-Football v3 response types for events. */
 
+import type { ApiErrorResponse } from "./api-error.response";
+import type { ApiNoContentResponse } from "./api-no-content.response";
+
 export interface ApiPaging {
   current: number;
   total: number;
@@ -79,5 +82,19 @@ export interface FixtureEvent {
   assist: { id: number | null; name: string | null };
   type: string; detail: string; comments: string | null;
 }
-export type EventsResponse = EventsResponseEnvelope<FixtureEvent[]>;
+export type EventsNoContentResponse =
+  ApiNoContentResponse<"fixtures/events">;
+export type EventsErrorResponse = ApiErrorResponse;
+
+export interface EventsApiResponses {
+  200: EventsResponseEnvelope<FixtureEvent[]>;
+  204: EventsNoContentResponse;
+  499: EventsErrorResponse;
+  500: EventsErrorResponse;
+}
+
+export type EventsResponse =
+  | EventsApiResponses[200]
+  | EventsApiResponses[204];
+
 export type EventsResponseEnvelope<T> = { get: "fixtures/events" | string; parameters: Record<string, string | number | undefined>; errors: string[] | Record<string, string>; results: number; paging: ApiPaging; response: T; };

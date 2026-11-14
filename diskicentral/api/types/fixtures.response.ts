@@ -1,5 +1,8 @@
 /** API-Football v3 response types for fixtures. */
 
+import type { ApiErrorResponse } from "./api-error.response";
+import type { ApiNoContentResponse } from "./api-no-content.response";
+
 export interface ApiPaging {
   current: number;
   total: number;
@@ -72,7 +75,20 @@ export interface Fixture {
   goals: { home: number | null; away: number | null };
   score: FixtureScore;
 }
-export type FixturesResponse = FixturesResponseEnvelope<Fixture[]>;
+export type FixturesNoContentResponse = ApiNoContentResponse<"fixtures">;
+export type FixturesErrorResponse = ApiErrorResponse;
+
+export interface FixturesApiResponses {
+  200: FixturesResponseEnvelope<Fixture[]>;
+  204: FixturesNoContentResponse;
+  499: FixturesErrorResponse;
+  500: FixturesErrorResponse;
+}
+
+export type FixturesResponse =
+  | FixturesApiResponses[200]
+  | FixturesApiResponses[204];
+
 export type FixturesResponseEnvelope<T> = {
   get: "fixtures" | string;
   parameters: Record<string, string | number | boolean | undefined>;

@@ -1,5 +1,8 @@
 /** API-Football v3 response types for live. */
 
+import type { ApiErrorResponse } from "./api-error.response";
+import type { ApiNoContentResponse } from "./api-no-content.response";
+
 export interface ApiPaging {
   current: number;
   total: number;
@@ -72,7 +75,20 @@ export interface Fixture {
   goals: { home: number | null; away: number | null };
   score: FixtureScore;
 }
-export type LiveResponse = LiveResponseEnvelope<Fixture[]>;
+export type LiveNoContentResponse = ApiNoContentResponse<"fixtures">;
+export type LiveErrorResponse = ApiErrorResponse;
+
+export interface LiveApiResponses {
+  200: LiveResponseEnvelope<Fixture[]>;
+  204: LiveNoContentResponse;
+  499: LiveErrorResponse;
+  500: LiveErrorResponse;
+}
+
+export type LiveResponse =
+  | LiveApiResponses[200]
+  | LiveApiResponses[204];
+
 export type LiveResponseEnvelope<T> = {
   get: "fixtures" | string;
   parameters: Record<string, string | number | boolean | undefined>;

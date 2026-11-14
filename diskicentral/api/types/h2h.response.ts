@@ -1,5 +1,8 @@
 /** API-Football v3 response types for h2h. */
 
+import type { ApiErrorResponse } from "./api-error.response";
+import type { ApiNoContentResponse } from "./api-no-content.response";
+
 export interface ApiPaging {
   current: number;
   total: number;
@@ -72,7 +75,21 @@ export interface Fixture {
   goals: { home: number | null; away: number | null };
   score: FixtureScore;
 }
-export type H2HResponse = H2HResponseEnvelope<Fixture[]>;
+export type H2HNoContentResponse =
+  ApiNoContentResponse<"fixtures/headtohead">;
+export type H2HErrorResponse = ApiErrorResponse;
+
+export interface H2HApiResponses {
+  200: H2HResponseEnvelope<Fixture[]>;
+  204: H2HNoContentResponse;
+  499: H2HErrorResponse;
+  500: H2HErrorResponse;
+}
+
+export type H2HResponse =
+  | H2HApiResponses[200]
+  | H2HApiResponses[204];
+
 export type H2HResponseEnvelope<T> = {
   get: "fixtures/headtohead" | string;
   parameters: Record<string, string | number | undefined>;
