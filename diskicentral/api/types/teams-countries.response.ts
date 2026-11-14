@@ -1,8 +1,8 @@
 import type { ApiErrorResponse } from "./api-error.response";
 import type { Country } from "./countries.response";
-import type { TeamsNoContentResponse } from "./teams.response";
+import type { ApiNoContentResponse } from "./api-no-content.response";
 
-export type TeamsCountriesNoContentResponse = TeamsNoContentResponse;
+export type TeamsCountriesNoContentResponse = ApiNoContentResponse<"teams/countries">;
 export type TeamsCountriesErrorResponse = ApiErrorResponse;
 
 export interface TeamsCountriesApiResponses {

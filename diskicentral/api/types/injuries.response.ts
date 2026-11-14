@@ -8,7 +8,25 @@ export interface ApiPaging {
   total: number;
 }
 
-export interface Injury { player: { id: number; name: string; photo: string | null; }; team: { id: number; name: string; logo: string }; fixture: { id: number; timezone: string; date: string; timestamp: number }; league: { id: number; season: number; name: string; country: string; logo: string; flag: string }; type: string; reason: string | null; }
+export interface Injury {
+  player: {
+    id: number;
+    name: string;
+    photo: string | null;
+    type: string;
+    reason: string | null;
+  };
+  team: { id: number; name: string; logo: string };
+  fixture: { id: number; timezone: string; date: string; timestamp: number };
+  league: {
+    id: number;
+    season: number;
+    name: string;
+    country: string;
+    logo: string;
+    flag: string | null;
+  };
+}
 export type InjuriesNoContentResponse = ApiNoContentResponse<"injuries">;
 export type InjuriesErrorResponse = ApiErrorResponse;
 export interface InjuriesApiResponses {

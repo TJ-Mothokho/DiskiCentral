@@ -11,7 +11,7 @@ export interface ApiPaging {
 export interface SquadPlayer { id: number; name: string; age: number | null; number: number | null; position: string | null; photo: string | null; };
 export interface Squad { team: { id: number; name: string; logo: string }; players: SquadPlayer[]; }
 export type PlayersSquadsNoContentResponse =
-  ApiNoContentResponse<"players/squad", "players/topscorers">;
+  ApiNoContentResponse<"players/squads">;
 export type PlayersSquadsErrorResponse = ApiErrorResponse;
 export interface PlayersSquadsApiResponses {
   200: PlayersSquadsResponseEnvelope<Squad[]>;

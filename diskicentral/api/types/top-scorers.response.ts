@@ -18,7 +18,7 @@ export type TopScorersNoContentResponse =
   ApiNoContentResponse<TopScoringEndpoint>;
 export type TopScorersErrorResponse = ApiErrorResponse;
 export interface TopScorersApiResponses {
-  200: TopScorersResponseEnvelope<TopScorer[]>;
+  200: TopScorersResponseEnvelope<TopScorer[], "players/topscorers">;
   204: TopScorersNoContentResponse;
   499: TopScorersErrorResponse;
   500: TopScorersErrorResponse;
@@ -27,8 +27,15 @@ export type TopScorersResponse =
   | TopScorersApiResponses[200]
   | TopScorersApiResponses[204];
 
-export type TopAssistsResponse = TopScorersResponse;
-export type TopYellowCardsResponse = TopScorersResponse;
-export type TopRedCardsResponse = TopScorersResponse;
+export type TopAssistsResponse = TopScorerResponseFor<"players/topassists">;
+export type TopYellowCardsResponse = TopScorerResponseFor<"players/topyellowcards">;
+export type TopRedCardsResponse = TopScorerResponseFor<"players/topredcards">;
 
-export type TopScorersResponseEnvelope<T> = { get: "players/topscorers" | string; parameters: Record<string, string | number | undefined>; errors: string[] | Record<string, string>; results: number; paging: ApiPaging; response: T; };
+export type TopScorersResponseEnvelope<
+  T,
+  Endpoint extends TopScoringEndpoint = "players/topscorers",
+> = { get: Endpoint; parameters: Record<string, string | number | undefined>; errors: string[] | Record<string, string>; results: number; paging: ApiPaging; response: T; };
+
+export type TopScorerResponseFor<Endpoint extends TopScoringEndpoint> =
+  | TopScorersResponseEnvelope<TopScorer[], Endpoint>
+  | ApiNoContentResponse<Endpoint>;

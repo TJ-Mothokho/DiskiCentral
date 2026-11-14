@@ -9,7 +9,7 @@ export interface ApiPaging {
 }
 
 export interface Transfer { date: string; type: string; teams: { in: { id: number; name: string; logo: string }; out: { id: number; name: string; logo: string } };} 
-export interface PlayerTransfers { player: { id: number; name: string }; transfers: Transfer[]; }
+export interface PlayerTransfers { player: { id: number; name: string }; update: string; transfers: Transfer[]; }
 export type TransfersNoContentResponse =
   ApiNoContentResponse<"transfers">;
 export type TransfersErrorResponse = ApiErrorResponse;

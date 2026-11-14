@@ -12,7 +12,21 @@ export interface LineupPlayer {
   player: { id: number; name: string; number: number | null; pos: string | null; grid: string | null; };
   statistics?: Array<Record<string, unknown>>;
 }
-export interface TeamLineup { team: { id: number; name: string; logo: string }; coach: { id: number | null; name: string | null; photo: string | null }; formation: string | null; startXI: LineupPlayer[]; substitutes: LineupPlayer[]; }
+export interface TeamLineup {
+  team: {
+    id: number;
+    name: string;
+    logo: string;
+    colors?: {
+      player: { primary: string; number: string; border: string };
+      goalkeeper: { primary: string; number: string; border: string };
+    } | null;
+  };
+  coach: { id: number | null; name: string | null; photo: string | null };
+  formation: string | null;
+  startXI: LineupPlayer[];
+  substitutes: LineupPlayer[];
+}
 export type LineupsNoContentResponse =
   ApiNoContentResponse<"fixtures/lineups">;
 export type LineupsErrorResponse = ApiErrorResponse;

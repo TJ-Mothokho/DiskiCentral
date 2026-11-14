@@ -10,7 +10,7 @@ export interface ApiPaging {
 
 export interface PlayerTeamHistory { team: { id: number; name: string; logo: string }; seasons: number[]; }
 export type PlayersTeamsNoContentResponse =
-  ApiNoContentResponse<"players/squad", "players/topscorers">;
+  ApiNoContentResponse<"players/teams">;
 export type PlayersTeamsErrorResponse = ApiErrorResponse;
 export interface PlayersTeamsApiResponses {
   200: PlayersTeamsResponseEnvelope<PlayerTeamHistory[]>;

@@ -1,8 +1,8 @@
 import type { ApiErrorResponse } from "./api-error.response";
-import type { TeamsNoContentResponse } from "./teams.response";
 import type { SeasonYear } from "./seasons.response";
+import type { ApiNoContentResponse } from "./api-no-content.response";
 
-export type TeamsSeasonsNoContentResponse = TeamsNoContentResponse;
+export type TeamsSeasonsNoContentResponse = ApiNoContentResponse<"teams/seasons">;
 export type TeamsSeasonsErrorResponse = ApiErrorResponse;
 
 export interface TeamsSeasonsApiResponses {
