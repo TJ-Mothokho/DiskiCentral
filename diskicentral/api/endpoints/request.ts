@@ -2,8 +2,8 @@ import axios from "axios";
 
 const API_FOOTBALL_BASE_URL = "https://v3.football.api-sports.io";
 
-const API_FOOTBALL_API_KEY =
-  process.env["x-apisports-key"] ?? process.env.X_APISPORTS_KEY;
+const API_FOOTBALL_API_KEY: string =
+  process.env["x-apisports-key"] ?? process.env.X_APISPORTS_KEY ?? "";
 
 if (!API_FOOTBALL_API_KEY) {
   throw new Error(
@@ -44,12 +44,18 @@ export async function request<T>(
 
   let body: unknown;
 
+  // A 204 response may have an empty body. Do not attempt JSON.parse("").
+  if (response.status === 204 && response.data.trim() === "") {
+    return undefined as T;
+  }
+
   try {
     body = JSON.parse(response.data);
   } catch {
     throw new ApiFootballError(
       "API-Football returned an invalid JSON response.",
       response.status,
+      response.data,
     );
   }
 
@@ -62,7 +68,6 @@ export async function request<T>(
   }
 
   if (
-    response.status !== 204 &&
     body &&
     typeof body === "object" &&
     "errors" in body &&

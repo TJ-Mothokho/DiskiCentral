@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import type { PlayersProfilesResponse } from "@/api/types/players-profiles.response";
 import type { PlayersResponse } from "@/api/types/players.response";
 import type { PlayersSeasonsResponse } from "@/api/types/players-seasons.response";
@@ -8,126 +9,90 @@ import type {
   TopRedCardsResponse,
   TopScorersResponse,
   TopYellowCardsResponse,
+  TopScoringEndpoint,
 } from "@/api/types/top-scorers.response";
 import { request } from "./request";
 
-export interface GetPlayerSeasonsParams {
-  player?: number;
+export interface GetPlayerSeasonsParams { player?: number; }
+const getCachedPlayerSeasons = unstable_cache(
+  (params: GetPlayerSeasonsParams) => request<PlayersSeasonsResponse>("players/seasons", { player: params.player }),
+  ["players", "seasons"],
+  { revalidate: 60 * 60 * 24 * 7 },
+);
+export async function getPlayerSeasons(params: GetPlayerSeasonsParams = {}): Promise<PlayersSeasonsResponse> {
+  return getCachedPlayerSeasons(params);
 }
 
-export async function getPlayerSeasons(
-  params: GetPlayerSeasonsParams = {},
-): Promise<PlayersSeasonsResponse> {
-  return request<PlayersSeasonsResponse>("players/seasons", {
-    player: params.player,
-  });
+export interface GetPlayerProfilesParams { player?: number; search?: string; page?: number; }
+const getCachedPlayerProfiles = unstable_cache(
+  (params: GetPlayerProfilesParams) => request<PlayersProfilesResponse>("players/profiles", {
+    player: params.player, search: params.search, page: params.page,
+  }),
+  ["players", "profiles"],
+  { revalidate: 60 * 60 * 24 * 7 },
+);
+export async function getPlayerProfiles(params: GetPlayerProfilesParams = {}): Promise<PlayersProfilesResponse> {
+  return getCachedPlayerProfiles(params);
 }
 
-export interface GetPlayerProfilesParams {
-  player?: number;
-  search?: string;
-  page?: number;
+export interface GetPlayersParams { id?: number; season?: number; team?: number; league?: number; page?: number; search?: string; }
+const getCachedPlayers = unstable_cache(
+  (params: GetPlayersParams) => request<PlayersResponse>("players", {
+    id: params.id, season: params.season, team: params.team, league: params.league,
+    page: params.page, search: params.search,
+  }),
+  ["players"],
+  { revalidate: 60 * 60 },
+);
+export async function getPlayers(params: GetPlayersParams = {}): Promise<PlayersResponse> {
+  return getCachedPlayers(params);
 }
 
-export async function getPlayerProfiles(
-  params: GetPlayerProfilesParams = {},
-): Promise<PlayersProfilesResponse> {
-  return request<PlayersProfilesResponse>("players/profiles", {
-    player: params.player,
-    search: params.search,
-    page: params.page,
-  });
-}
-
-export interface GetPlayersParams {
-  id?: number;
-  season?: number;
-  team?: number;
-  league?: number;
-  page?: number;
-  search?: string;
-}
-
-export async function getPlayers(
-  params: GetPlayersParams = {},
-): Promise<PlayersResponse> {
-  return request<PlayersResponse>("players", {
-    id: params.id,
-    season: params.season,
-    team: params.team,
-    league: params.league,
-    page: params.page,
-    search: params.search,
-  });
-}
-
-export interface GetPlayerSquadsParams {
-  team?: number;
-  player?: number;
-}
-
-export async function getPlayerSquads(
-  params: GetPlayerSquadsParams,
-): Promise<PlayersSquadsResponse> {
+export interface GetPlayerSquadsParams { team?: number; player?: number; }
+const getCachedPlayerSquads = unstable_cache(
+  (params: GetPlayerSquadsParams) => request<PlayersSquadsResponse>("players/squads", {
+    team: params.team, player: params.player,
+  }),
+  ["players", "squads"],
+  { revalidate: 60 * 60 * 6 },
+);
+export async function getPlayerSquads(params: GetPlayerSquadsParams): Promise<PlayersSquadsResponse> {
   if (params.team === undefined && params.player === undefined) {
-    throw new Error(
-      "The player squads endpoint requires either a team or player parameter.",
-    );
+    throw new Error("The player squads endpoint requires either a team or player parameter.");
   }
+  return getCachedPlayerSquads(params);
+}
 
-  return request<PlayersSquadsResponse>("players/squads", {
-    team: params.team,
-    player: params.player,
+export interface GetPlayerTeamsParams { player: number; }
+const getCachedPlayerTeams = unstable_cache(
+  (params: GetPlayerTeamsParams) => request<PlayersTeamsResponse>("players/teams", { player: params.player }),
+  ["players", "teams"],
+  { revalidate: 60 * 60 * 24 },
+);
+export async function getPlayerTeams(params: GetPlayerTeamsParams): Promise<PlayersTeamsResponse> {
+  return getCachedPlayerTeams(params);
+}
+
+export interface GetTopPlayersParams { league: number; season: number; }
+async function getTopPlayers(endpoint: TopScoringEndpoint, params: GetTopPlayersParams): Promise<TopScorersResponse | TopAssistsResponse | TopYellowCardsResponse | TopRedCardsResponse> {
+  return request<TopScorersResponse | TopAssistsResponse | TopYellowCardsResponse | TopRedCardsResponse>(endpoint, {
+    league: params.league, season: params.season,
   });
 }
-
-export interface GetPlayerTeamsParams {
-  player: number;
+const getCachedTopPlayers = unstable_cache(
+  (params: { endpoint: TopScoringEndpoint; values: GetTopPlayersParams }) => getTopPlayers(params.endpoint, params.values),
+  ["players", "top"],
+  { revalidate: 60 * 60 },
+);
+export async function getTopScorers(params: GetTopPlayersParams): Promise<TopScorersResponse> {
+  return getCachedTopPlayers({ endpoint: "players/topscorers", values: params }) as Promise<TopScorersResponse>;
 }
-
-export async function getPlayerTeams(
-  params: GetPlayerTeamsParams,
-): Promise<PlayersTeamsResponse> {
-  return request<PlayersTeamsResponse>("players/teams", {
-    player: params.player,
-  });
+export async function getTopAssists(params: GetTopPlayersParams): Promise<TopAssistsResponse> {
+  return getCachedTopPlayers({ endpoint: "players/topassists", values: params }) as Promise<TopAssistsResponse>;
 }
-
-export interface GetTopPlayersParams {
-  league: number;
-  season: number;
+export async function getTopYellowCards(params: GetTopPlayersParams): Promise<TopYellowCardsResponse> {
+  return getCachedTopPlayers({ endpoint: "players/topyellowcards", values: params }) as Promise<TopYellowCardsResponse>;
 }
-
-async function getTopPlayers(
-  endpoint: string,
-  params: GetTopPlayersParams,
-): Promise<TopScorersResponse> {
-  return request<TopScorersResponse>(endpoint, {
-    league: params.league,
-    season: params.season,
-  });
-}
-
-export async function getTopScorers(
-  params: GetTopPlayersParams,
-): Promise<TopScorersResponse> {
-  return getTopPlayers("players/topscorers", params);
-}
-
-export async function getTopAssists(
-  params: GetTopPlayersParams,
-): Promise<TopAssistsResponse> {
-  return getTopPlayers("players/topassists", params);
-}
-
-export async function getTopYellowCards(
-  params: GetTopPlayersParams,
-): Promise<TopYellowCardsResponse> {
-  return getTopPlayers("players/topyellowcards", params);
-}
-
-export async function getTopRedCards(
-  params: GetTopPlayersParams,
-): Promise<TopRedCardsResponse> {
-  return getTopPlayers("players/topredcards", params);
+export async function getTopRedCards(params: GetTopPlayersParams): Promise<TopRedCardsResponse> {
+  return getCachedTopPlayers({ endpoint: "players/topredcards", values: params }) as Promise<TopRedCardsResponse>;
 }
