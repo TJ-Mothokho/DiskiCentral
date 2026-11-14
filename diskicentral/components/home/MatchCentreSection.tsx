@@ -18,10 +18,6 @@ export default function MatchCentreSection({
     homeTeam: fixture.homeTeamName ?? "Home team",
     awayTeam: fixture.awayTeamName ?? "Away team",
     date: fixture.kickoff,
-    time: new Date(fixture.kickoff).toLocaleTimeString("en-ZA", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
     venue: fixture.venue ?? undefined,
     status: "upcoming",
   }));
@@ -52,9 +48,15 @@ export default function MatchCentreSection({
               Upcoming Fixtures
             </h3>
             <div className="space-y-3">
-              {upcomingMatches.map((match) => (
-                <MatchCard key={match.id} match={match} darkMode={darkMode} />
-              ))}
+              {upcomingMatches.length > 0 ? (
+                upcomingMatches.map((match) => (
+                  <MatchCard key={match.id} match={match} darkMode={darkMode} />
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">
+                  No upcoming PSL fixtures available.
+                </p>
+              )}
             </div>
           </div>
           <div>
@@ -63,9 +65,15 @@ export default function MatchCentreSection({
               Recent Results
             </h3>
             <div className="space-y-3">
-              {resultMatches.map((match) => (
-                <MatchCard key={match.id} match={match} darkMode={darkMode} />
-              ))}
+              {resultMatches.length > 0 ? (
+                resultMatches.map((match) => (
+                  <MatchCard key={match.id} match={match} darkMode={darkMode} />
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">
+                  No recent PSL results available.
+                </p>
+              )}
             </div>
           </div>
         </div>

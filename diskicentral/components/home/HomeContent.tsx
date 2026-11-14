@@ -1,5 +1,5 @@
 import { Article } from "@/types/article";
-import { Fixture } from "@/types/fixture";
+import { Fixture, FixtureStatus } from "@/types/fixture";
 import { Player } from "@/types/player";
 import { Transfer } from "@/types/transfer";
 import { Video } from "@/types/video";
@@ -18,7 +18,6 @@ interface HomeContentProps {
   articles: Article[];
   fixtures: Fixture[];
   players: Player[];
-  results: Fixture[];
   transfers: Transfer[];
   videos: Video[];
 }
@@ -27,7 +26,6 @@ export default function HomeContent({
   articles,
   fixtures,
   players,
-  results,
   transfers,
   videos,
 }: HomeContentProps) {
@@ -52,9 +50,19 @@ export default function HomeContent({
 
   const kickoff = (fixture: Fixture) => new Date(fixture.kickoff).getTime();
   const upcomingFixtures = [...fixtures]
+    .filter(
+      (fixture) =>
+        fixture.status === FixtureStatus.Scheduled &&
+        Number.isFinite(kickoff(fixture)),
+    )
     .sort((a, b) => kickoff(a) - kickoff(b))
     .slice(0, 3);
-  const recentResults = [...results]
+  const recentResults = [...fixtures]
+    .filter(
+      (fixture) =>
+        fixture.status === FixtureStatus.Finished &&
+        Number.isFinite(kickoff(fixture)),
+    )
     .sort((a, b) => kickoff(b) - kickoff(a))
     .slice(0, 3);
 

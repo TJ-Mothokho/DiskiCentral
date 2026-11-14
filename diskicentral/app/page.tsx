@@ -7,13 +7,14 @@ import { VideoService } from "@/services/VideoService";
 
 export const dynamic = "force-dynamic";
 
+const PREMIER_SOCCER_LEAGUE_ID = "8501e2ad-c5ed-4b26-83ae-df2f4d1b1e5e";
+
 export default async function HomePage() {
-  const [articles, fixtures, players, results, transfers, videos] =
+  const [articles, fixtures, players, transfers, videos] =
     await Promise.all([
       ArticlesService.getApiArticles(),
-      FixturesService.getUpcomingFixtures(),
+      FixturesService.getFixturesByCompetitionId(PREMIER_SOCCER_LEAGUE_ID),
       PlayersService.getApiPlayers(),
-      FixturesService.getFinishedFixtures(),
       TransfersService.getApiTransfers(),
       VideoService.getApiVideos(),
     ]);
@@ -23,7 +24,6 @@ export default async function HomePage() {
       articles={articles.data}
       fixtures={fixtures.data}
       players={players.data}
-      results={results.data}
       transfers={transfers.data}
       videos={videos.data}
     />

@@ -21,11 +21,11 @@ export type Fixture = {
   fotmobLink: string | null;
   kickoff: string;
   venue: string | null;
-  status: number;
+  status: FixtureStatus;
   homeScore: number | null;
   awayScore: number | null;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | null;
+  updatedAt: string | null;
   competitionName: string | null;
   homeTeamName: string | null;
   awayTeamName: string | null;
@@ -64,4 +64,61 @@ export enum FixtureStatus {
   Finished = 3,
   Postponed = 4,
   Cancelled = 5,
+}
+
+export interface FeedFixture {
+  round: string;
+  roundName: string;
+  pageUrl: string;
+  id: string;
+  home: {
+    name: string;
+    shortName: string;
+    id: string;
+  };
+  away: {
+    name: string;
+    shortName: string;
+    id: string;
+  };
+  status: {
+    utcTime: string;
+    timezone: string | null;
+    finished: boolean;
+    started: boolean;
+    cancelled: boolean;
+    awarded: boolean;
+    scoreStr: string | null;
+    reason: {
+      short: string;
+      shortKey: string;
+      long: string;
+      longKey: string;
+    } | null;
+  };
+}
+
+export interface FixtureResponse {
+  success: boolean;
+  message: string;
+  data: {
+    source: string;
+    source_url: string;
+    league_id: string;
+    league_name: string;
+    season: string;
+    page_url: string;
+    first_unplayed_match: {
+      firstUnplayedMatchIndex: number;
+      firstUnplayedMatchId: string;
+    };
+    has_ongoing_match: boolean;
+    fixture_info: {
+      rounds: object[];
+      teams: { id: number; name: string }[];
+      groups: object[];
+    };
+    fixtures: FeedFixture[];
+  };
+  errors: string[];
 }
