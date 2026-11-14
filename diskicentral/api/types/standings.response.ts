@@ -1,5 +1,7 @@
 /** API-Football v3 response types for standings. */
 
+import type { ApiErrorResponse } from "./api-error.response";
+
 export interface ApiPaging {
   current: number;
   total: number;
@@ -18,7 +20,28 @@ export interface StandingsLeague {
   standings: StandingRow[][];
 }
 export interface StandingsItem { league: StandingsLeague; }
-export type StandingsResponse = StandingsResponseEnvelope<StandingsItem[]>;
+export interface StandingsNoContentResponse {
+  get: "standings";
+  parameters: [];
+  errors: {
+    time: string;
+    bug: string;
+    report: "standings";
+  };
+  results: 0;
+  paging: ApiPaging;
+  response: [];
+}
+export type StandingsErrorResponse = ApiErrorResponse;
+export interface StandingsApiResponses {
+  200: StandingsResponseEnvelope<StandingsItem[]>;
+  204: StandingsNoContentResponse;
+  499: StandingsErrorResponse;
+  500: StandingsErrorResponse;
+}
+export type StandingsResponse =
+  | StandingsApiResponses[200]
+  | StandingsApiResponses[204];
 export type StandingsResponseEnvelope<T> = {
   get: "standings" | string;
   parameters: Record<string, string | number | undefined>;
