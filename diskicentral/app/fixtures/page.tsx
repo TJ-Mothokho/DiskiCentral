@@ -1,29 +1,19 @@
 import Link from "next/link";
-import { getFixtures } from "@/api/endpoints/fixtures";
-import type { Fixture } from "@/api/types/fixtures.response";
-import { MatchCard } from "@/components/football/MatchCard";
-import { EmptyState, ErrorState, SectionHeading } from "@/components/football/Primitives";
+import { SeasonFilters } from "@/components/football/SeasonFilters";
+import { SeasonFixtureList } from "@/components/football/SeasonFixtureList";
+import { EmptyState, SectionHeading } from "@/components/football/Primitives";
 import { FilterLinks } from "@/components/football/Controls";
+import { ACTIVE_FOCUS_COMPETITIONS, FOCUS_COMPETITIONS } from "@/lib/focus";
+import { getFocusSeasonFixtures } from "@/lib/focus-fixtures";
+import { currentFootballSeason, monthOptions } from "@/lib/seasons";
 
-function today() { return new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Johannesburg" }).format(new Date()); }
-function shiftDate(date: string, amount: number) { const value = new Date(`${date}T12:00:00Z`); value.setUTCDate(value.getUTCDate() + amount); return value.toISOString().slice(0, 10); }
-
-export default async function FixturesPage({ searchParams }: { searchParams: Promise<{ date?: string; league?: string }> }) {
+export default async function FixturesPage({ searchParams }: { searchParams: Promise<{ league?: string; team?: string; month?: string; page?: string }> }) {
   const query = await searchParams;
-  const date = /^\d{4}-\d{2}-\d{2}$/.test(query.date ?? "") ? query.date as string : today();
+  const season = currentFootballSeason();
+  const allFixtures = await getFocusSeasonFixtures(season);
   const league = query.league && /^\d+$/.test(query.league) ? Number(query.league) : undefined;
-  let fixtures: Fixture[] = [];
-  let error = "";
-  try { const result = await getFixtures({ date, league, timezone: "Africa/Johannesburg" }); fixtures = result.response as Fixture[]; } catch { error = "Fixtures are currently unavailable. Try again shortly."; }
-  const competitions = Array.from(new Map(fixtures.map((fixture) => [fixture.league.id, fixture.league.name])).entries());
-  const previous = `/fixtures?date=${shiftDate(date, -1)}${league ? `&league=${league}` : ""}`;
-  const next = `/fixtures?date=${shiftDate(date, 1)}${league ? `&league=${league}` : ""}`;
-  return (
-    <main className="page-frame py-8 sm:py-12">
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><div><p className="eyebrow">Match centre · Fixtures</p><h1 className="mt-2 text-4xl font-bold tracking-[-0.05em] text-primary">Fixtures</h1><p className="mt-3 max-w-xl text-secondary">Browse every match by date and competition. Results stay in the same matchday experience.</p></div><Link href="/" className="ui-button ui-button--secondary">Back to matchday</Link></div>
-      <div className="mt-8 flex flex-wrap items-center gap-2"><Link href={previous} className="ui-button ui-button--secondary">← Previous</Link><span className="rounded-full bg-primary px-4 py-3 text-xs font-semibold text-surface">{date}</span><Link href={next} className="ui-button ui-button--secondary">Next →</Link></div>
-      <div className="mt-6"><FilterLinks items={[{ label: "All competitions", href: `/fixtures?date=${date}`, active: !league }, ...competitions.map(([id, name]) => ({ label: name, href: `/fixtures?date=${date}&league=${id}`, active: league === id }))]} /></div>
-      <section className="mt-10"><SectionHeading eyebrow="Kick-off times in SAST" title={fixtures.length ? `${fixtures.length} match${fixtures.length === 1 ? "" : "es"}` : "No matches"} description="Open a fixture for match insight, lineups, events and statistics." />{error ? <ErrorState message={error} /> : fixtures.length ? <div className="grid gap-3 md:grid-cols-2">{fixtures.map((fixture) => <MatchCard key={fixture.fixture.id} fixture={fixture} />)}</div> : <EmptyState title="No fixtures on this date" message="Try the previous or next matchday, or remove the competition filter." />}</section>
-    </main>
-  );
+  const fixtures = league ? allFixtures.filter((fixture) => fixture.league.id === league) : allFixtures;
+  const teams = Array.from(new Map(fixtures.flatMap((fixture) => [[fixture.teams.home.id, fixture.teams.home.name], [fixture.teams.away.id, fixture.teams.away.name]])).entries()).map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
+  const focusItems = FOCUS_COMPETITIONS.filter((competition) => competition.available && competition.leagueId !== undefined).map((competition) => ({ label: competition.shortLabel, href: `/fixtures?league=${competition.leagueId}`, active: league === competition.leagueId }));
+  return <main className="page-frame py-8 sm:py-12"><div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><div><p className="eyebrow">Season {season} · South Africa + CAF</p><h1 className="mt-2 text-4xl font-bold tracking-[-0.05em] text-primary">Fixtures</h1><p className="mt-3 max-w-xl text-secondary">The next ten matches at a time, with previous results available through pagination and filters for competition, team, and month.</p></div><Link href="/" className="ui-button ui-button--secondary">Back to matchday</Link></div><div className="mt-8"><FilterLinks items={[{ label: "All focus competitions", href: "/fixtures", active: !league }, ...focusItems]} /></div><div className="mt-6"><SeasonFilters basePath="/fixtures" extraQuery={{ league: league ? String(league) : undefined }} monthOptions={monthOptions(season)} teams={teams} selectedMonth={query.month} selectedTeam={query.team} /></div><section className="mt-10"><SectionHeading eyebrow={`${fixtures.length} season fixtures loaded`} title={league ? (ACTIVE_FOCUS_COMPETITIONS.find((competition) => competition.leagueId === league)?.label ?? "Competition fixtures") : "South African football season"} description="Played and scheduled matches from the August-to-July football season." />{allFixtures.length ? <SeasonFixtureList fixtures={fixtures} basePath="/fixtures" query={query} /> : <EmptyState title="No focus fixtures returned" message="The provider has not returned season fixtures for the selected focus competitions yet." />}</section></main>;
 }
