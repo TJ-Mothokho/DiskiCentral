@@ -8,7 +8,10 @@ export function MatchCard({ fixture }: { fixture: Fixture }) {
   return (
     <Link href={`/matches/${fixture.fixture.id}`} className="match-card group">
       <div className="match-card__meta">
-        <span>{fixture.league.name}</span>
+        <span className="inline-flex items-center gap-1.5">
+          <img src={fixture.league.logo} alt="" className="h-4 w-4 object-contain" />
+          {fixture.league.name}
+        </span>
         <span>{formatMatchDate(fixture.fixture.date)}</span>
       </div>
       <div className="match-card__teams">

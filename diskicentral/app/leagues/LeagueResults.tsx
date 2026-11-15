@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { CountryFlag } from "@/components/ui/CountryFlag";
 import type { CountryGroup } from "./leagueFilters";
 
 export default function LeagueResults({
@@ -21,9 +22,12 @@ export default function LeagueResults({
           {groups.map(({ country, leagues }) => (
             <details key={country} className="py-3">
               <summary className="cursor-pointer text-[22px] font-medium text-primary">
-                {country}{" "}
-                <span className="text-[10px] font-medium text-secondary">
-                  ({leagues.length})
+                <span className="inline-flex items-center gap-2">
+                  <CountryFlag country={country} flagUrl={leagues[0]?.country.flag} />
+                  {country}
+                  <span className="text-[10px] font-medium text-secondary">
+                    ({leagues.length})
+                  </span>
                 </span>
               </summary>
               <ul className="mt-2 space-y-2 pl-5">

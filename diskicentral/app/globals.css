@@ -36,7 +36,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .eyebrow { color: var(--secondary); font-size: 10px; font-weight: 600; letter-spacing: .14em; line-height: 1.4; text-transform: uppercase; }
   .ui-button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 999px; padding: 0 18px; font-size: 13px; font-weight: 600; line-height: 1; white-space: nowrap; transition: background-color .15s ease, color .15s ease, border-color .15s ease, transform .15s ease; }
   .ui-button:hover { transform: translateY(-1px); }
-  .ui-button--primary { background: var(--primary); color: var(--surface); }
   .ui-button--secondary { border-color: var(--line); background: var(--surface); color: var(--primary); }
   .ui-button--tertiary { background: var(--canvas); color: var(--primary); }
   .ui-button--filter { min-height: 34px; padding-inline: 14px; font-size: 12px; }
@@ -58,7 +57,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .filter-row, .tab-row { display: flex; flex-wrap: wrap; gap: 8px; }
   .filter-chip, .tab { display: inline-flex; min-height: 32px; align-items: center; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); padding: 0 14px; color: var(--secondary); font-size: 12px; font-weight: 600; }
   .filter-chip:hover, .tab:hover { border-color: var(--primary); color: var(--primary); }
-  .filter-chip--active, .tab--active { border-color: var(--primary); background: var(--primary); color: var(--surface); }
+  .filter-chip--active, .tab--active { border-color: var(--primary); background: var(--primary); }
   .stat-bar { height: 100%; border-radius: inherit; background: var(--accent); }
   .stat-bar--forest { background: var(--primary); }
   .stat-bar--blue { background: var(--tertiary); }
@@ -87,6 +86,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .data-table tr:last-child td { border-bottom: 0; }
   .site-footer { margin-top: 72px; border-top: 1px solid var(--line); background: var(--surface); }
 }
+
+.ui-button--primary { background: var(--primary); color: var(--surface); }
+.filter-chip--active { color: var(--surface); }
 
 @media (max-width: 760px) {
   .page-frame { width: min(100% - 24px, 620px); }
