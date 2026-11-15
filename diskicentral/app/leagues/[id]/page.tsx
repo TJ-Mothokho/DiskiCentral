@@ -7,8 +7,8 @@ import Link from "next/link";
 import { CountryFlag } from "@/components/ui/CountryFlag";
 import { EmptyState, SectionHeading } from "@/components/football/Primitives";
 import { Tabs } from "@/components/football/Controls";
-import { SeasonFilters } from "@/components/football/SeasonFilters";
-import { SeasonFixtureList } from "@/components/football/SeasonFixtureList";
+import { SeasonFilters } from "@/components/football/Match/SeasonFilters";
+import { SeasonFixtureList } from "@/components/football/Match/SeasonFixtureList";
 import { TopPerformers } from "@/components/football/TopPerformers";
 import { monthOptions, seasonEnd, seasonStart } from "@/lib/seasons";
 

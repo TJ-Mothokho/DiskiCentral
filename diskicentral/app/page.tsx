@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArticleCard } from "@/components/football/ArticleCard";
 import { FilterLinks } from "@/components/football/Controls";
-import { MatchCard, MatchdayBanner } from "@/components/football/MatchCard";
+import { MatchCard } from "@/components/football/Match/MatchCard";
+import { MatchdayBanner } from "@/components/football/Match/MatchdayBanner";
 import { AdSlot, EmptyState, SectionHeading, StatBar } from "@/components/football/Primitives";
 import { FOCUS_COMPETITIONS } from "@/lib/focus";
 import { getFocusUpcomingFixtures } from "@/lib/focus-fixtures";

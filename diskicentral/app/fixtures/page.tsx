@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { SeasonFilters } from "@/components/football/SeasonFilters";
-import { SeasonFixtureList } from "@/components/football/SeasonFixtureList";
+import { SeasonFilters } from "@/components/football/Match/SeasonFilters";
+import { SeasonFixtureList } from "@/components/football/Match/SeasonFixtureList";
 import { EmptyState, SectionHeading } from "@/components/football/Primitives";
 import { FilterLinks } from "@/components/football/Controls";
 import { ACTIVE_FOCUS_COMPETITIONS, FOCUS_COMPETITIONS } from "@/lib/focus";

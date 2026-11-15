@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 import { Tabs } from "@/components/football/Controls";
 import { CountryFlag } from "@/components/ui/CountryFlag";
 import { EmptyState, SectionHeading, StatBar } from "@/components/football/Primitives";
-import { SeasonFilters } from "@/components/football/SeasonFilters";
-import { SeasonFixtureList } from "@/components/football/SeasonFixtureList";
+import { SeasonFilters } from "@/components/football/Match/SeasonFilters";
+import { SeasonFixtureList } from "@/components/football/Match/SeasonFixtureList";
 import { currentFootballSeason, monthOptions, seasonEnd, seasonStart } from "@/lib/seasons";
 import { statText } from "@/lib/stats";
 
