@@ -1,43 +1,24 @@
 "use client";
 
-import { useCallback, useState } from "react";
 import { usePathname } from "next/navigation";
 import Footer from "./Footer";
 import ThemeContext from "@/themes/ThemeContext";
 import NavBar from "./NavBar";
+import { AuthProvider } from "@/context/AuthContext";
 
 export function PublicLayout({ children }: { children: React.ReactNode }) {
-  const [darkMode, setDarkMode] = useState(false);
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith("/admin");
-  const isDarkModeToggleDisabled = true;
-  const toggleDarkMode = useCallback(
-    () => setDarkMode((current) => !current),
-    [],
-  );
-
-  if (isAdminRoute) {
-    return <>{children}</>;
-  }
-
+  if (isAdminRoute) return <>{children}</>;
   return (
-    <ThemeContext.Provider
-      value={{
-        darkMode,
-        toggleDarkMode,
-        isDarkModeToggleDisabled,
-      }}>
-      <div
-        className={`min-h-screen flex flex-col ${
-          darkMode ? "dark bg-primary text-surface" : "bg-canvas text-ink"
-        }`}
-        data-theme={darkMode ? "dark" : "light"}>
-        <NavBar />
-
-        <div className="flex-1">{children}</div>
-
-        <Footer darkMode={darkMode} />
-      </div>
-    </ThemeContext.Provider>
+    <AuthProvider>
+      <ThemeContext.Provider value={{ darkMode: false, toggleDarkMode: () => undefined, isDarkModeToggleDisabled: true }}>
+        <div className="min-h-screen bg-canvas text-ink">
+          <NavBar />
+          <div className="min-h-[calc(100vh-64px)]">{children}</div>
+          <Footer darkMode={false} />
+        </div>
+      </ThemeContext.Provider>
+    </AuthProvider>
   );
 }

@@ -1,0 +1,19 @@
+import { getPlayers } from "@/api/endpoints/players";
+import { notFound } from "next/navigation";
+import { Tabs } from "@/components/football/Controls";
+import { EmptyState, SectionHeading, StatBar } from "@/components/football/Primitives";
+
+function statValue(record: Record<string, unknown> | undefined, key: string) {
+  const value = record?.[key];
+  if (typeof value === "number" || typeof value === "string") return value;
+  return "—";
+}
+
+export default async function PlayerPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params; if (!/^\d+$/.test(id)) notFound(); const playerId = Number(id);
+  let entry;
+  try { entry = (await getPlayers({ id: playerId, season: new Date().getFullYear() })).response[0]; } catch { notFound(); }
+  if (!entry) notFound();
+  const season = entry.statistics[0]; const games = season?.games as Record<string, unknown> | undefined; const goals = season?.goals as Record<string, unknown> | undefined; const passes = season?.passes as Record<string, unknown> | undefined;
+  return <main className="page-frame py-8 sm:py-12"><div className="detail-hero"><p className="eyebrow">Player profile · {season?.team.name ?? "Team unavailable"}</p><div className="mt-4 flex flex-wrap items-center gap-5"><img src={entry.player.photo} alt="" className="h-20 w-20 rounded-full bg-surface/10 object-cover" /><div><h1 className="text-3xl font-bold tracking-[-0.04em] text-surface">{entry.player.name}</h1><p className="mt-2 text-sm text-surface/70">{entry.player.nationality ?? "Nationality unavailable"} · {entry.player.age ? `${entry.player.age} years` : "Age unavailable"}</p></div></div></div><div className="mt-5"><Tabs active="Overview" items={[{ label: "Overview", href: `/players/${playerId}` }]} /></div><div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(280px,.7fr)]"><section><SectionHeading eyebrow="Season output" title="A profile beyond the headline numbers" />{season ? <div className="detail-panel"><div className="grid grid-cols-2 gap-5 sm:grid-cols-4"><div><p className="eyebrow">Appearances</p><strong className="mt-2 block text-3xl text-primary">{statValue(games, "appearences")}</strong></div><div><p className="eyebrow">Goals</p><strong className="mt-2 block text-3xl text-primary">{statValue(goals, "total")}</strong></div><div><p className="eyebrow">Assists</p><strong className="mt-2 block text-3xl text-primary">{statValue(goals, "assists")}</strong></div><div><p className="eyebrow">Rating</p><strong className="mt-2 block text-3xl text-primary">{statValue(games, "rating")}</strong></div></div><div className="mt-8 space-y-5"><StatBar label="Goals" value={statValue(goals, "total")} max={20} /><StatBar label="Assists" value={statValue(goals, "assists")} max={20} tone="forest" /><StatBar label="Pass accuracy" value={statValue(passes, "accuracy")} max={100} tone="blue" /></div></div> : <EmptyState title="Season statistics unavailable" message="The provider has returned a profile without season statistics." />}</section><aside className="detail-panel"><p className="eyebrow">Player details</p><h2 className="mt-2 text-xl font-bold text-primary">Role on the pitch</h2><dl className="mt-5 space-y-4 text-sm"><div className="flex justify-between gap-4"><dt className="text-secondary">Position</dt><dd className="font-semibold text-primary">{statValue(games, "position")}</dd></div><div className="flex justify-between gap-4"><dt className="text-secondary">Nationality</dt><dd className="font-semibold text-primary">{entry.player.nationality ?? "—"}</dd></div><div className="flex justify-between gap-4"><dt className="text-secondary">Height</dt><dd className="font-semibold text-primary">{entry.player.height ?? "—"}</dd></div><div className="flex justify-between gap-4"><dt className="text-secondary">Weight</dt><dd className="font-semibold text-primary">{entry.player.weight ?? "—"}</dd></div></dl></aside></div></main>;
+}
