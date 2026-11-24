@@ -87,11 +87,20 @@ const getCachedHistoricalFixtures = unstable_cache(
   { revalidate: 60 * 60 * 24 },
 );
 
+const getCachedMatchFixture = unstable_cache(
+  requestFixtures,
+  ["fixtures", "match-detail"],
+  { revalidate: 60 },
+);
+
 export async function getFixtures(
   params: GetFixturesParams = {},
 ): Promise<FixturesResponse> {
+  if (params.id !== undefined) {
+    return getCachedMatchFixture(params);
+  }
+
   const historicalQuery =
-    params.id !== undefined ||
     params.ids !== undefined ||
     (params.season !== undefined &&
       params.date === undefined &&
