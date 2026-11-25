@@ -1,6 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "dev": "npm --prefix diskicentral run dev"
+    "dev": "npm --prefix diskicentral run dev",
+    "live:dev": "npm --prefix diskicentral run live:dev",
+    "live:start": "npm --prefix diskicentral run live:start",
+    "test": "npm --prefix diskicentral test"
   }
 }
