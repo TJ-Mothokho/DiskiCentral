@@ -2,7 +2,13 @@ import Link from "next/link";
 import type { TeamLineup } from "@/api/types/lineups.response";
 import { EmptyState, SectionHeading } from "@/components/football/Primitives";
 
-export function MatchLineups({ lineups }: { lineups: TeamLineup[] }) {
+export function MatchLineups({
+  lineups,
+  upcoming = false,
+}: {
+  lineups: TeamLineup[];
+  upcoming?: boolean;
+}) {
   return (
     <section>
       <SectionHeading eyebrow="Team sheets" title="Lineups" />
@@ -47,7 +53,11 @@ export function MatchLineups({ lineups }: { lineups: TeamLineup[] }) {
       ) : (
         <EmptyState
           title="Lineups unavailable"
-          message="The provider has not returned team sheets for this match."
+          message={
+            upcoming
+              ? "Lineups are not available at the moment."
+              : "The provider has not returned team sheets for this match."
+          }
         />
       )}
     </section>

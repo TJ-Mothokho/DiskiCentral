@@ -26,19 +26,19 @@ function isExpectedGoals(type: string) {
 
 function categoryFor(
   type: string,
-): "Attack" | "Passing" | "Goalkeeping" | "Defense" | "Other" {
+): "Attack" | "Passing" | "Goalkeeping" | "Defense" | null {
   const normalized = type.toLowerCase();
   if (categoryPatterns.Attack.test(normalized)) return "Attack";
   if (categoryPatterns.Passing.test(normalized)) return "Passing";
   if (categoryPatterns.Goalkeeping.test(normalized)) return "Goalkeeping";
   if (categoryPatterns.Defense.test(normalized)) return "Defense";
-  return "Other";
+  return null;
 }
 
 const categoryPatterns = {
   Attack: /shot/,
   Passing: /pass|cross|through ball|key pass/,
-  Goalkeeping: /save|goalkeeper/,
+  Goalkeeping: /save|goalkeeper|goals? prevented/,
   Defense: /tackle|interception|clearance|duel|block/,
 };
 
@@ -55,33 +55,33 @@ export function groupMatchStatistics(
     Passing: [],
     Defense: [],
     Goalkeeping: [],
-    Other: [],
   };
   for (const stat of uniqueStats.values()) {
-    categories[categoryFor(stat.type)].push(stat);
+    const category = categoryFor(stat.type);
+    if (category) categories[category]?.push(stat);
   }
 
-  const defenseStats =
-    categories.Goalkeeping.length > 2
-      ? categories.Defense
-      : [...categories.Defense, ...categories.Goalkeeping];
+  const topStatNames = new Set([
+    "ball possession",
+    "total shots",
+    "shots on goal",
+    "total passes",
+    "corner kicks",
+    "offsides",
+    "fouls",
+    "yellow cards",
+    "red cards",
+    "goalkeeper saves",
+    "saves",
+  ]);
+  const topFiltered = (items: FixtureStatisticsValue[]) =>
+    items.filter((stat) => !topStatNames.has(stat.type.trim().toLowerCase()));
+
   const result: MatchStatCategory[] = [
-    { label: "Attack", statistics: categories.Attack },
-    { label: "Passing", statistics: categories.Passing },
-    {
-      label:
-        categories.Goalkeeping.length > 2
-          ? "Defense"
-          : "Defense and goalkeeping",
-      statistics: defenseStats,
-    },
+    { label: "Attacking", statistics: topFiltered(categories.Attack) },
+    { label: "Passing", statistics: topFiltered(categories.Passing) },
+    { label: "Defence", statistics: topFiltered(categories.Defense) },
+    { label: "Goalkeeping", statistics: topFiltered(categories.Goalkeeping) },
   ];
-  if (categories.Goalkeeping.length > 2) {
-    result.push({
-      label: "Goalkeeping",
-      statistics: categories.Goalkeeping,
-    });
-  }
-  result.push({ label: "Other", statistics: categories.Other });
   return result.filter((category) => category.statistics.length > 0);
 }

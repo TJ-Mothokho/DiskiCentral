@@ -1,6 +1,6 @@
 import type { Fixture } from "@/api/types/fixtures.response";
 import type { FixtureTeamStatistics } from "@/api/types/fixtures-statistics.response";
-import { EmptyState, SectionHeading } from "@/components/football/Primitives";
+import { EmptyState } from "@/components/football/Primitives";
 import { MatchBasicStats } from "./MatchBasicStats";
 import { MatchStatRows } from "./MatchStatRows";
 import { groupMatchStatistics } from "./MatchStatisticsUtils";
@@ -20,16 +20,12 @@ export function MatchStatistics({
 
   const categories = groupMatchStatistics(statistics);
   return (
-    <div className="space-y-8">
-      <SectionHeading
-        eyebrow="Match intelligence"
-        title="The numbers behind the game"
-      />
+    <div className="space-y-10">
       <MatchBasicStats fixture={fixture} statistics={statistics} />
       {categories.length ? (
         categories.map((category) => (
           <section key={category.label}>
-            <h2 className="mb-3 text-lg font-bold text-primary">
+            <h2 className="mb-4 text-xl font-bold text-primary">
               {category.label}
             </h2>
             <MatchStatRows

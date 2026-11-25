@@ -6,37 +6,66 @@ export function MatchPlayerRatings({
 }: {
   players: FixturePlayerStatistics[];
 }) {
-  const topPlayers = players.flatMap((group) => group.players).slice(0, 6);
+  const ratedPlayers = new Map<
+    number,
+    { id: number; name: string; rating: string; numericRating: number }
+  >();
+
+  for (const entry of players.flatMap((group) => group.players)) {
+    const games = entry.statistics.find(
+      (statistic) =>
+        statistic.games !== null && typeof statistic.games === "object",
+    )?.games;
+    if (!games || typeof games !== "object") continue;
+    const gameStats = games as Record<string, unknown>;
+    const minutes = Number(gameStats.minutes);
+    const rawRating = gameStats.rating;
+    if (!Number.isFinite(minutes) || minutes <= 0) continue;
+    if (
+      (typeof rawRating !== "string" && typeof rawRating !== "number") ||
+      String(rawRating).trim() === ""
+    ) {
+      continue;
+    }
+
+    const numericRating = Number(rawRating);
+    if (!Number.isFinite(numericRating)) continue;
+    const player = {
+      id: entry.player.id,
+      name: entry.player.name,
+      rating: String(rawRating),
+      numericRating,
+    };
+    const existing = ratedPlayers.get(player.id);
+    if (!existing || player.numericRating > existing.numericRating) {
+      ratedPlayers.set(player.id, player);
+    }
+  }
+
+  const sortedPlayers = Array.from(ratedPlayers.values()).sort(
+    (a, b) => b.numericRating - a.numericRating,
+  );
 
   return (
     <div className="detail-panel">
       <p className="eyebrow">Player match data</p>
       <h2 className="mt-2 text-xl font-bold text-primary">Ratings and output</h2>
-      {topPlayers.length ? (
+      {sortedPlayers.length ? (
         <div className="mt-5 space-y-5">
-          {topPlayers.map((entry) => {
-            const games = entry.statistics[0]?.games as
-              | Record<string, unknown>
-              | undefined;
-            const rating =
-              typeof games?.rating === "string" ||
-              typeof games?.rating === "number"
-                ? String(games.rating)
-                : "—";
-
+          {sortedPlayers.map((player) => {
             return (
               <div
-                key={entry.player.id}
+                key={player.id}
                 className="flex items-center justify-between gap-4"
               >
                 <Link
-                  href={`/players/${entry.player.id}`}
+                  href={`/players/${player.id}`}
                   className="font-semibold text-primary underline-offset-2 hover:underline"
                 >
-                  {entry.player.name}
+                  {player.name}
                 </Link>
                 <span className="font-mono text-sm text-secondary">
-                  {rating}
+                  {player.rating}
                 </span>
               </div>
             );

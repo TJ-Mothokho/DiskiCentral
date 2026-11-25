@@ -2,6 +2,20 @@ import type { FixtureEvent } from "@/api/types/events.response";
 
 export type EventScore = { home: number; away: number } | null;
 
+export function sortEventIndexes(events: FixtureEvent[], descending = false) {
+  return events
+    .map((event, index) => ({ event, index }))
+    .sort((a, b) => {
+      const elapsedDifference = a.event.time.elapsed - b.event.time.elapsed;
+      const extraDifference =
+        (a.event.time.extra ?? 0) - (b.event.time.extra ?? 0);
+      const chronologicalDifference = elapsedDifference || extraDifference;
+      return (descending ? -chronologicalDifference : chronologicalDifference) ||
+        a.index - b.index;
+    })
+    .map(({ index }) => index);
+}
+
 export function isSubstitution(event: FixtureEvent) {
   const type = event.type.toLowerCase();
   return type === "subst" || type === "substitution";
