@@ -1,36 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DiskiCentral
 
-## Getting Started
+This is the Next.js application for DiskiCentral. Production deployment is prepared for Azure App Service and a separate Azure Container Apps live WebSocket service.
 
-First, run the development server:
+## Local development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run live:dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`. Copy `.env.example` to `.env.local` and `.env.live.example` to `.env.live`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Required server-side configuration:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `X_APISPORTS_KEY`
+- `NEXT_PUBLIC_API_URL` when using the existing article/auth API
+- `NEXT_PUBLIC_LIVE_WS_URL` to enable browser live updates
 
-## Learn More
+Do not use `NEXT_PUBLIC_` for API-Football credentials.
 
-To learn more about Next.js, take a look at the following resources:
+## Live service
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The persistent WebSocket process starts with `npm run live:start`. It listens on `LIVE_SERVICE_PORT` (default `8080`) and exposes `/health` and `/healthz`. See [api/live/README.md](./api/live/README.md) and [docs/azure-deployment.md](./docs/azure-deployment.md).
