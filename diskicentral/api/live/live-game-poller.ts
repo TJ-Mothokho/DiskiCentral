@@ -9,6 +9,7 @@ import type { LiveGameListener } from "./live-game.types";
 
 export interface LiveGameDataSource {
   getLiveFixtures: typeof getLiveFixtures;
+  getFixture?: (params: { id: number }) => Promise<import("@/api/types/fixtures.response").FixturesResponse>;
   getFixtureEvents: typeof getFixtureEvents;
   getFixtureStatistics: typeof getFixtureStatistics;
   getLiveOdds: typeof getLiveOdds;
@@ -16,6 +17,7 @@ export interface LiveGameDataSource {
 
 export const apiFootballLiveGameDataSource: LiveGameDataSource = {
   getLiveFixtures,
+  getFixture: async (params) => (await import("@/api/endpoints/fixtures")).getFixtures(params),
   getFixtureEvents,
   getFixtureStatistics,
   getLiveOdds,
@@ -131,7 +133,6 @@ export class LiveGamePoller {
             message: "The live-game poller paused to preserve the configured daily API budget.",
           });
         }
-        this.stop();
         return;
       }
       this.estimatedCallsToday += estimatedCost;
@@ -140,13 +141,18 @@ export class LiveGamePoller {
       try {
         liveFixtures = await this.dataSource.getLiveFixtures({ live: "all" });
       } catch (error) {
+        this.publishUpstreamFailure(fixtureIds, error);
+        return;
+      }
+
+      if (!liveFixtures || typeof liveFixtures !== "object" || !("response" in liveFixtures)) {
         for (const fixtureId of fixtureIds) {
           this.broadcaster.publish({
             type: "error",
             fixtureId,
             updatedAt: new Date().toISOString(),
             code: "UPSTREAM_UNAVAILABLE",
-            message: errorMessage(error),
+            message: "The live-fixture response was incomplete.",
           });
         }
         return;
@@ -162,13 +168,38 @@ export class LiveGamePoller {
 
         if (!fixture) {
           state.missingPolls += 1;
-          if (state.missingPolls >= 2 && !state.endedPublished) {
+          if (state.missingPolls >= 3 && !state.endedPublished) {
+            const canLookup = this.estimatedCallsToday < this.options.maxApiCallsPerDay;
+            if (canLookup) {
+              this.estimatedCallsToday += 1;
+              try {
+                const lookup = await this.dataSource.getFixture?.({ id: fixtureId });
+                const authoritative = lookup?.response?.[0];
+                if (authoritative && ["FT", "AET", "PEN"].includes(authoritative.fixture.status.short)) {
+                  state.endedPublished = true;
+                  this.broadcaster.publish({ type: "ended", fixtureId, updatedAt: new Date().toISOString() });
+                }
+              } catch (error) {
+                this.broadcaster.publish({
+                  type: "error",
+                  fixtureId,
+                  updatedAt: new Date().toISOString(),
+                  code: "UPSTREAM_UNAVAILABLE",
+                  message: errorMessage(error),
+                });
+              }
+            }
+          }
+          return;
+        }
+        state.missingPolls = 0;
+        if (["FT", "AET", "PEN", "CANC", "ABD", "AWD", "WO"].includes(fixture.fixture.status.short)) {
+          if (!state.endedPublished) {
             state.endedPublished = true;
             this.broadcaster.publish({ type: "ended", fixtureId, updatedAt: new Date().toISOString() });
           }
           return;
         }
-        state.missingPolls = 0;
         state.endedPublished = false;
 
         const [eventsResult, statisticsResult, oddsResult] = await Promise.allSettled([
@@ -199,6 +230,18 @@ export class LiveGamePoller {
       }));
     } finally {
       this.pollInFlight = false;
+    }
+  }
+
+  private publishUpstreamFailure(fixtureIds: number[], error: unknown): void {
+    for (const fixtureId of fixtureIds) {
+      this.broadcaster.publish({
+        type: "error",
+        fixtureId,
+        updatedAt: new Date().toISOString(),
+        code: "UPSTREAM_UNAVAILABLE",
+        message: errorMessage(error),
+      });
     }
   }
 
